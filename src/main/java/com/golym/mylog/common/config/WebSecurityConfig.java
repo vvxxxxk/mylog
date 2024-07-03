@@ -22,7 +22,8 @@ import java.util.Collections;
 public class WebSecurityConfig {
 
     private final String[] EXCLUDE_PATHS = {
-            "/"
+            "/",
+            "/user/signup"
     };
 
     @Bean
