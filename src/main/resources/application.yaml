@@ -9,7 +9,7 @@ spring:
   # data.sql
   sql:
     init:
-      mode: always  # ?????? ??? ? always, ?? never
+      mode: never  # 데이터베이스 초기화 시 always, 이후 never
   # jpa
   jpa:
     hibernate:
