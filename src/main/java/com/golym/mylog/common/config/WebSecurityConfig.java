@@ -1,15 +1,21 @@
 package com.golym.mylog.common.config;
 
+import com.golym.mylog.common.filter.JwtVerificationFilter;
+import com.golym.mylog.common.utils.JwtTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -21,9 +27,12 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+    private final JwtTokenUtils jwtTokenUtils;
+
     private final String[] EXCLUDE_PATHS = {
             "/",
             "/images/**",
+            "/login",
             "/user/signup/**",
             "/user/send-authcode",
             "/user/verify-authcode",
@@ -72,6 +81,15 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                 .requestMatchers(EXCLUDE_PATHS).permitAll()
                 .anyRequest().authenticated());
+
+        // 필터 등록
+        http
+                .addFilterBefore(new JwtVerificationFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class);
+
+        // 세션 설정
+        http
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

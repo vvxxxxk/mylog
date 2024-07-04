@@ -3,6 +3,7 @@ package com.golym.mylog.service;
 import com.golym.mylog.common.constants.RoleType;
 import com.golym.mylog.common.exception.BadRequestException;
 import com.golym.mylog.common.utils.CodeGenerator;
+import com.golym.mylog.model.dto.request.RequestLoginDto;
 import com.golym.mylog.model.dto.request.RequestSendAuthCodeDto;
 import com.golym.mylog.model.dto.request.RequestSignupDto;
 import com.golym.mylog.model.entity.AuthEmail;
@@ -21,6 +22,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,9 +43,19 @@ public class UserService {
     private final AuthEmailRepository authEmailRepository;
     private final UserRoleMappingRepository userRoleMappingRepository;
 
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
+    public Authentication login(RequestLoginDto params) {
+        try {
+            return authenticationManagerBuilder.getObject()
+                    .authenticate(new UsernamePasswordAuthenticationToken(params.getEmail(), params.getPassword()));
+        } catch (UsernameNotFoundException | BadCredentialsException e) {
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
 
     @Async
     public void sendAuthcode(RequestSendAuthCodeDto params) {
@@ -109,4 +125,6 @@ public class UserService {
         UserRoleMappingEntity userRoleMapping = new UserRoleMappingEntity(id, user, role);
         userRoleMappingRepository.save(userRoleMapping);
     }
+
+
 }
