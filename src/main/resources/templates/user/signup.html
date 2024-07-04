@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>회원가입 - MyLog</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" type="image/png" sizes="32x32" href="images/logo/image-icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/image-icon-32x32.png">
   <style>
     body {
         font-family: Arial, sans-serif;
@@ -23,7 +23,7 @@
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         width: 100%;
-        max-width: 400px;
+        max-width: 500px;
         border: 1px solid #e0e0e0; /* 테두리 추가 */
     }
     .signup-container h2 {
@@ -71,20 +71,19 @@
 <body>
 
 <div class="signup-container">
-  <h2>회원 가입을 위해<br>정보를 입력해주세요</h2>
-  <form>
+  <h2>회원 가입을 위해 정보를 입력해주세요</h2>
+  <form th:action method="post">
     <div class="form-group">
       <label for="email">이메일</label>
       <div class="input-group">
         <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요" required>
         <div class="input-group-append">
-          <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#emailVerifyModal">인증하기</button>
+          <button type="button" class="btn btn-outline-secondary" id="verifyEmailButton">인증하기</button>
+        </div>
+        <div class="invalid-feedback">
+          유효한 이메일 주소를 입력하세요.
         </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label for="name">이름</label>
-      <input type="text" class="form-control" id="name" placeholder="이름을 입력하세요" required>
     </div>
     <div class="form-group">
       <label for="password">비밀번호</label>
@@ -92,7 +91,11 @@
     </div>
     <div class="form-group">
       <label for="confirmPassword">비밀번호 확인</label>
-      <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required>
+      <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호 확인을 입력하세요" required>
+    </div>
+    <div class="form-group">
+      <label for="name">이름</label>
+      <input type="text" class="form-control" id="name" placeholder="이름을 입력하세요" required>
     </div>
     <div class="form-group">
       <label for="nickname">닉네임</label>
@@ -120,10 +123,18 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="verificationCode">인증 코드</label>
-            <input type="text" class="form-control" id="verificationCode" placeholder="인증 코드를 입력하세요">
+            <label for="authcode">인증 코드</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="authcode" placeholder="인증 코드를 입력하세요">
+              <div class="input-group-append">
+                <button type="button" class="btn btn-outline-secondary" id="sendAuthCodeButton">인증 코드 전송</button>
+              </div>
+              <div class="invalid-feedback" id="authcodeFeedback">
+                여섯 자리 숫자를 입력하세요.
+              </div>
+            </div>
           </div>
-          <button type="button" class="btn btn-primary" onclick="verifyEmail()">인증 확인</button>
+          <button type="button" class="btn btn-primary" id="verifyButton" onclick="verifyEmail()" disabled>인증 확인</button>
         </form>
       </div>
     </div>
@@ -136,30 +147,88 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+  <!-- 이메일 인증 버튼 클릭 시 이메일 유효성 검사 -->
+  document.getElementById('verifyEmailButton').addEventListener('click', function() {
+    const emailField = document.getElementById('email');
+    if (!emailField.checkValidity()) {
+      emailField.classList.add('is-invalid');
+    } else {
+      emailField.classList.remove('is-invalid');
+      $('#emailVerifyModal').modal('show');
+    }
+  });
+
+  <!-- 인증 코드 전송 -->
+  document.getElementById('sendAuthCodeButton').addEventListener('click', function() {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+    fetch("/user/signup/authcode", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status) {
+        alert('인증 코드를 전송했습니다. 인증 코드를 입력해주세요.');
+      } else {
+        alert('인증 코드 전송에 실패했습니다. 다시 시도해주세요.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('서버와의 통신 중 오류가 발생했습니다.');
+    });
+  });
+
+  <!-- 인증코드 필드에 입력 시 인증코드 유효성 검사 -->
+  document.getElementById('authcode').addEventListener('input', function() {
+    const authcode = document.getElementById('authcode').value;
+    const authcodeField = document.getElementById('authcode');
+    const verifyButton = document.getElementById('verifyButton');
+
+    // 인증코드 정규표현식
+    const authcodeRegex = /^[0-9]{6}$/;
+    if (authcodeRegex.test(authcode)) {
+      document.getElementById('authcodeFeedback').style.display = 'none';
+      authcodeField.classList.remove('is-invalid');
+      verifyButton.disabled = false;
+    } else {
+      document.getElementById('authcodeFeedback').style.display = 'block';
+      authcodeField.classList.add('is-invalid');
+      verifyButton.disabled = true;
+    }
+  });
+
+  <!-- 이메일 검증 -->
   function verifyEmail() {
-      // 이메일 인증 로직을 구현합니다.
       const email = document.getElementById('email').value;
-      const verificationCode = document.getElementById('verificationCode').value;
+      const authcode = document.getElementById('authcode').value;
 
-      // 이메일과 인증 코드를 서버에 보내어 확인합니다.
-      console.log(`Email: ${email}, Verification Code: ${verificationCode}`);
-
-      // 서버로부터 인증 확인 응답을 받았다고 가정합니다.
-      const isVerified = true;  // 예제에서는 항상 성공으로 가정합니다.
-
-      if (isVerified) {
-          // 이메일 입력 필드를 비활성화하고 인증 완료 상태를 표시합니다.
+      fetch("/user/signup/verify-authcode", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: email, authcode: authcode})
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status == true) {
           document.getElementById('email').disabled = true;
           document.getElementById('email').classList.add('verified');
-          // 인증 완료 메시지 표시
           alert('이메일 인증이 완료되었습니다.');
-      } else {
-          // 인증 실패 메시지 표시
+          $('#emailVerifyModal').modal('hide');
+        } else {
           alert('인증 코드가 올바르지 않습니다. 다시 시도해주세요.');
-      }
-
-      // 인증이 완료되면 모달을 닫습니다.
-      $('#emailVerifyModal').modal('hide');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('서버와의 통신 중 오류가 발생했습니다.');
+      });
   }
 
   function checkNickname() {

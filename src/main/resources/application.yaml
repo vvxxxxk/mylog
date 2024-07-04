@@ -15,3 +15,14 @@ spring:
     hibernate:
       ddl-auto: update
     defer-datasource-initialization: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ENC(T0M7FwnJ9dijfGK00reAhBfSh6PQOCU0kjQhmbQmLaA=)
+    password: ENC(VLPi588Hc5QuWe+DiihXwVLcgHJ547zTuvsggxhz8JhjNA/CLwJL1A==)
+    properties:
+      mail.smtp.starttls.enable: true
+      mail.smtp.auth: true
+  redis:
+    host: localhost
+    port: 6379
