@@ -1,4 +1,4 @@
-package com.golym.mylog.model.dto;
+package com.golym.mylog.model.dto.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

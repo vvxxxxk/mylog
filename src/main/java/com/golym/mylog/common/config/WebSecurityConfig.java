@@ -24,7 +24,11 @@ public class WebSecurityConfig {
     private final String[] EXCLUDE_PATHS = {
             "/",
             "/images/**",
-            "/user/signup/**"
+            "/user/signup/**",
+            "/user/send-authcode",
+            "/user/verify-authcode",
+            "/user/check-email",
+            "/user/check-nickname",
     };
 
     @Bean

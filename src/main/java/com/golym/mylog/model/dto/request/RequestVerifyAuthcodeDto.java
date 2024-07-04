@@ -1,4 +1,4 @@
-package com.golym.mylog.model.dto;
+package com.golym.mylog.model.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,13 +1,17 @@
 package com.golym.mylog.common.exception;
 
-import com.golym.mylog.model.dto.ErrorMessageDto;
+import com.golym.mylog.model.dto.common.ErrorMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
@@ -56,6 +60,37 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, getHeaders(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<?> handleException(HttpRequestMethodNotSupportedException e) {
+        log.error(e.getMessage());
+
+        ErrorMessageDto errorMessage = ErrorMessageDto.builder()
+                .code(HttpStatus.METHOD_NOT_ALLOWED.value())
+                .status(HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase())
+                .message("Method Not Allowed")
+                .build();
+
+        return new ResponseEntity<>(errorMessage, getHeaders(), HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleException(MethodArgumentNotValidException e) {
+
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> toSnakeCase(fieldError.getField()) + " : " + fieldError.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        ErrorMessageDto errorMessage = ErrorMessageDto.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(message)
+                .build();
+
+        log.debug("{}", errorMessage);
+
+        return new ResponseEntity<>(errorMessage, getHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
     //    +------------------------------------------------------------------+
     //    |                        5xx Server Errors                         |
     //    +------------------------------------------------------------------+
@@ -89,5 +124,9 @@ public class GlobalExceptionHandler {
         headers.add("Content-Type", "application/json");
         headers.add("X-Content-Type-Options", "nosniff");
         return headers;
+    }
+
+    private String toSnakeCase(String camelCase) {
+        return camelCase.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
     }
 }

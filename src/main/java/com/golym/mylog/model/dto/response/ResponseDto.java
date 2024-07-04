@@ -1,4 +1,4 @@
-package com.golym.mylog.model.dto;
+package com.golym.mylog.model.dto.response;
 
 import com.golym.mylog.common.constants.ResponseType;
 import lombok.AllArgsConstructor;

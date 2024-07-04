@@ -1,11 +1,11 @@
-package com.golym.mylog.model.dto;
+package com.golym.mylog.model.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class RequestEmailDto {
+public class RequestSendAuthCodeDto {
 
     @Email
     @NotBlank(message = "이메일을 입력해주세요.")

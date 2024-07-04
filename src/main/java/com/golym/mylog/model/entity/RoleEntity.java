@@ -25,4 +25,9 @@ public class RoleEntity {
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<UserRoleMappingEntity> userRoleMappings;
+
+    public RoleEntity(RoleType roleType) {
+        this.roleId = roleType.getROLE_ID();
+        this.roleName = roleType;
+    }
 }

@@ -1,11 +1,18 @@
 package com.golym.mylog.service;
 
+import com.golym.mylog.common.constants.RoleType;
 import com.golym.mylog.common.exception.BadRequestException;
 import com.golym.mylog.common.utils.CodeGenerator;
-import com.golym.mylog.model.dto.RequestEmailDto;
+import com.golym.mylog.model.dto.request.RequestSendAuthCodeDto;
+import com.golym.mylog.model.dto.request.RequestSignupDto;
 import com.golym.mylog.model.entity.AuthEmail;
+import com.golym.mylog.model.entity.RoleEntity;
+import com.golym.mylog.model.entity.UserEntity;
+import com.golym.mylog.model.entity.UserRoleMappingEntity;
+import com.golym.mylog.model.entity.id.UserRoleMappingId;
 import com.golym.mylog.repository.AuthEmailRepository;
 import com.golym.mylog.repository.UserRepository;
+import com.golym.mylog.repository.UserRoleMappingRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +21,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -26,11 +35,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AuthEmailRepository authEmailRepository;
+    private final UserRoleMappingRepository userRoleMappingRepository;
 
+    private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
+
     @Async
-    public void sendAuthcode(RequestEmailDto params) {
+    public void sendAuthcode(RequestSendAuthCodeDto params) {
         String toEmail = params.getEmail();
         String authcode = CodeGenerator.generateAuthcode();
 
@@ -66,5 +78,35 @@ public class UserService {
                 .orElseThrow(() -> new BadRequestException("Invalid email."));
 
         return email.equals(authEmail.getEmail()) && authcode.equals(authEmail.getAuthcode());
+    }
+
+    public boolean isExistEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean isExistNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
+    @Transactional
+    public void signup(RequestSignupDto params) {
+
+        UserEntity user = UserEntity.builder()
+                .userId(CodeGenerator.generateID("U"))
+                .email(params.getEmail())
+                .password(passwordEncoder.encode(params.getPassword()))
+                .username(params.getUsername())
+                .nickname(params.getNickname())
+                .isActive(true)
+                .build();
+        userRepository.save(user);
+
+        RoleEntity role = new RoleEntity(RoleType.ROLE_USER);
+
+        UserRoleMappingId id = new UserRoleMappingId();
+        id.setUserId(user.getUserId());
+        id.setRoleId(role.getRoleId());
+        UserRoleMappingEntity userRoleMapping = new UserRoleMappingEntity(id, user, role);
+        userRoleMappingRepository.save(userRoleMapping);
     }
 }
