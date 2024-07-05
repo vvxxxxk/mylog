@@ -1,0 +1,12 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- common_head.html 변경 -->
+<head th:fragment="common_head(title,links)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">레이아웃 타이틀</title>
+    <!-- 공통 -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/image-icon-32x32.png">
+    <!-- 추가 -->
+    <th:block th:replace="${links}" />
+</head>

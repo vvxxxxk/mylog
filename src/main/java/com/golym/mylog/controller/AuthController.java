@@ -4,7 +4,9 @@ import com.golym.mylog.common.utils.JwtTokenUtils;
 import com.golym.mylog.model.dto.common.ErrorMessageDto;
 import com.golym.mylog.model.dto.common.JwtTokenMappingDto;
 import com.golym.mylog.model.dto.request.RequestLoginDto;
+import com.golym.mylog.model.dto.request.RequestReissueTokenDto;
 import com.golym.mylog.model.dto.response.ResponseLoginDto;
+import com.golym.mylog.model.dto.response.ResponseReissueTokenDto;
 import com.golym.mylog.service.JwtTokenService;
 import com.golym.mylog.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +51,13 @@ public class AuthController {
                 .accessToken(jwtTokenMappingDto.getAccessToken())
                 .refreshToken(jwtTokenMappingDto.getRefreshToken())
                 .build(), HttpStatus.OK);
+    }
+
+    @PostMapping("/api/reissue-token")
+    public ResponseEntity<?> reissueToken(@Validated @RequestBody RequestReissueTokenDto params) {
+
+        ResponseReissueTokenDto responseReissueTokenDto = jwtTokenService.reissueToken(params);
+
+        return new ResponseEntity<>(responseReissueTokenDto, HttpStatus.OK);
     }
 }

@@ -1,158 +1,3 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>회원가입 - MyLog</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/image-icon-32x32.png">
-  <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-    }
-    .signup-container {
-        background-color: #ffffff;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 500px;
-        border: 1px solid #e0e0e0; /* 테두리 추가 */
-    }
-    .signup-container h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #007bff; /* 텍스트 색상 */
-    }
-    .form-group label {
-        font-size: 14px;
-        color: #333333;
-    }
-    .form-control {
-        border: none;
-        border-bottom: 1px solid #cccccc;
-        border-radius: 0;
-        box-shadow: none;
-    }
-    .form-check-label {
-        font-size: 14px;
-        color: #555555;
-    }
-    .btn-primary {
-        background-color: #007bff;
-        border: none;
-        width: 100%;
-        padding: 10px;
-        font-size: 18px;
-    }
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-    .custom-control-input:checked ~ .custom-control-label::before {
-        background-color: #007bff;
-    }
-<!--    .input-group .form-control,-->
-<!--    .input-group-append .btn {-->
-<!--        height: 100%;-->
-<!--    }-->
-    .input-group-append .btn {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-  </style>
-</head>
-<body>
-
-<div class="signup-container">
-  <h2>회원 가입을 위해 정보를 입력해주세요</h2>
-  <form id="signupForm" th:action method="post">
-    <div class="form-group">
-      <label for="email">이메일</label>
-      <div class="input-group">
-        <input type="email" class="form-control" id="email" name="email" placeholder="이메일을 입력하세요" required>
-        <div class="input-group-append">
-          <button type="button" class="btn btn-outline-secondary" id="verifyEmailButton">인증하기</button>
-        </div>
-        <div class="invalid-feedback">
-          이미 가입한 회원이거나 유효하지 않은 이메일 주소입니다.
-        </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="password">비밀번호</label>
-      <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
-      <div class="invalid-feedback" id="passwordFeedback">
-        비밀번호는 8-16자리 영문, 숫자, 특수문자를 포함해야합니다.
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="confirmPassword">비밀번호 확인</label>
-      <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호 확인을 입력하세요" required>
-      <div class="invalid-feedback" id="confirmPasswordFeedback">
-        비밀번호와 비밀번호 확인이 일치하지 않습니다.
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="username">이름</label>
-      <input type="text" class="form-control" id="username" name="username" placeholder="이름을 입력하세요" required>
-    </div>
-    <div class="form-group">
-      <label for="nickname">닉네임</label>
-      <div class="input-group">
-        <input type="text" class="form-control" id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required>
-        <div class="input-group-append">
-          <button type="button" class="btn btn-outline-secondary" onclick="checkNickname()">중복 확인</button>
-        </div>
-      </div>
-    </div>
-    <button type="submit" class="btn btn-primary" id="signupButton">가입하기</button>
-  </form>
-</div>
-
-<!-- 이메일 인증 모달 -->
-<div class="modal fade" id="emailVerifyModal" tabindex="-1" role="dialog" aria-labelledby="emailVerifyModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="emailVerifyModalLabel">이메일 인증</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="authcode">인증 코드</label>
-            <div class="input-group">
-              <input type="text" class="form-control" id="authcode" placeholder="인증 코드를 입력하세요">
-              <div class="input-group-append">
-                <button type="button" class="btn btn-outline-secondary" id="sendAuthCodeButton">인증 코드 전송</button>
-              </div>
-              <div class="invalid-feedback" id="authcodeFeedback">
-                여섯 자리 숫자를 입력하세요.
-              </div>
-            </div>
-          </div>
-          <button type="button" class="btn btn-primary" id="verifyButton" onclick="verifyEmail()" disabled>인증 확인</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Bootstrap JS 및 jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<script>
   let isEmailVerified = false;
   let isPasswordVerified = false;
   let isNicknameChecked = false;
@@ -172,7 +17,7 @@
     }
 
     if (isFlag) {
-      fetch("/user/check-email", {
+      fetch("/api/check-email", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'
@@ -196,10 +41,10 @@
   });
 
   <!-- 인증 코드 전송 -->
-  document.getElementById('sendAuthCodeButton').addEventListener('click', function(event) {
+  document.getElementById('sendAuthCodeButton').addEventListener('click', async function(event) {
     event.preventDefault();
     const email = document.getElementById('email').value;
-    fetch("/user/send-authcode", {
+    fetch("/api/send-authcode", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -208,16 +53,13 @@
     })
     .then(response => response.json())
     .then(data => {
-      if (data.status == true) {
-        alert('인증 코드를 전송했습니다. 인증 코드를 입력해주세요.');
-      } else {
-        alert('인증 코드 전송에 실패했습니다. 다시 시도해주세요.');
-      }
     })
     .catch(error => {
       console.error('Error:', error);
       alert('서버와의 통신 중 오류가 발생했습니다.');
     });
+
+    alert('인증 코드를 전송했습니다. 인증 코드를 입력해주세요.');
   });
 
   <!-- 인증코드 필드에 입력 시 인증코드 유효성 검사 -->
@@ -244,7 +86,7 @@
       const email = document.getElementById('email').value;
       const authcode = document.getElementById('authcode').value;
 
-      fetch("/user/verify-authcode", {
+      fetch("/api/verify-authcode", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'
@@ -322,7 +164,7 @@
   <!-- 닉네임 중복확인 -->
   function checkNickname() {
     const nickname = document.getElementById('nickname').value;
-    fetch("/user/check-nickname", {
+    fetch("/api/check-nickname", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -347,6 +189,8 @@
 
   <!-- 회원가입 폼 제출 전 검증 -->
   document.getElementById('signupForm').addEventListener('submit', function(event) {
+    // 임시로 이메일 인증 없이 회원가입 가능
+    isEmailVerified = true;
     if(!isEmailVerified) {
       alert('이메일 인증은 필수입니다.');
       event.preventDefault();
@@ -361,7 +205,3 @@
       event.preventDefault();
     }
   });
-</script>
-
-</body>
-</html>

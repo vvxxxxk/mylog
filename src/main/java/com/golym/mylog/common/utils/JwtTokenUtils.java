@@ -1,5 +1,6 @@
 package com.golym.mylog.common.utils;
 
+import com.golym.mylog.common.exception.BadRequestException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -55,10 +57,12 @@ public class JwtTokenUtils implements InitializingBean {
         return null;
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token) throws HttpClientErrorException.Unauthorized {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            log.error("Expire JWT token: {}", e.getMessage());
         } catch (JwtException | IllegalArgumentException e) {
             log.error("Invalid JWT token: {}", e.getMessage());
         }
@@ -98,11 +102,15 @@ public class JwtTokenUtils implements InitializingBean {
     }
 
     public String generateRefreshToken(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
 
         Date expireDate = new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(expireDate)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();

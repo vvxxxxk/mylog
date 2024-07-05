@@ -1,4 +1,4 @@
-package com.golym.mylog.model.dto.common;
+package com.golym.mylog.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,11 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class JwtTokenMappingDto {
+public class ResponseReissueTokenDto {
 
+    private String userId;
     private String accessToken;
     private String refreshToken;
 }

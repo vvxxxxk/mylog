@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,14 +28,20 @@ public class WebSecurityConfig {
     private final JwtTokenUtils jwtTokenUtils;
 
     private final String[] EXCLUDE_PATHS = {
+            // main
             "/",
-            "/images/**",
+            // resource
+            "/css/**", "/images/**", "/js/**",
+            // page
+            "/signup",
+            "/blog",
+            // 비회원 API
             "/login",
-            "/user/signup/**",
-            "/user/send-authcode",
-            "/user/verify-authcode",
-            "/user/check-email",
-            "/user/check-nickname",
+            "/api/send-authcode",
+            "/api/verify-authcode",
+            "/api/check-email",
+            "/api/check-nickname",
+            "/api/reissue-token",
     };
 
     @Bean
@@ -80,6 +84,7 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                 .requestMatchers(EXCLUDE_PATHS).permitAll()
+                .requestMatchers("/**").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated());
 
         // 필터 등록

@@ -31,5 +31,5 @@ security:
   jwt:
     secret-key: ENC(7q9+u9tv0eO6zvs2VD4f7Ne5lEvmkcQoJ4fx1KH2DU3mxE8rdD4szVECJsXogjuWW6hCJzO0yKmE1d29G7P/PJ+NhIkWwvQ/sQoTWIqdBB7WTqdTdiVUxfSn2orUHhtpKdT5G2sMX4nXs1/tc+6LpyGffJWBMOwKcKmx/7JAj/eSFodOG2B8h1gGEhtylIZvTTO3do1Cv3c=)
     #access-token-expire: 300000
-    access-token-expire: 86400000
+    access-token-expire: 15000
     refresh-token-expire: 86400000

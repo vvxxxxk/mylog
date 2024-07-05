@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common/layout/head :: common_head(~{::title},~{::link})}">
+  <title>Mylog - signup</title>
+  <link rel="stylesheet" th:href="@{/css/signup.css}">
+</head>
+<body>
+
+<div class="signup-container">
+  <h2>회원 가입을 위해 정보를 입력해주세요</h2>
+  <form id="signupForm" th:action method="post">
+    <div class="form-group">
+      <label for="email">이메일</label>
+      <div class="input-group">
+        <input type="email" class="form-control" id="email" name="email" placeholder="이메일을 입력하세요" required>
+        <div class="input-group-append">
+          <button type="button" class="btn btn-outline-secondary" id="verifyEmailButton">인증하기</button>
+        </div>
+        <div class="invalid-feedback">
+          이미 가입한 회원이거나 유효하지 않은 이메일 주소입니다.
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="password">비밀번호</label>
+      <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+      <div class="invalid-feedback" id="passwordFeedback">
+        비밀번호는 8-16자리 영문, 숫자, 특수문자를 포함해야합니다.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="confirmPassword">비밀번호 확인</label>
+      <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호 확인을 입력하세요" required>
+      <div class="invalid-feedback" id="confirmPasswordFeedback">
+        비밀번호와 비밀번호 확인이 일치하지 않습니다.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="username">이름</label>
+      <input type="text" class="form-control" id="username" name="username" placeholder="이름을 입력하세요" required>
+    </div>
+    <div class="form-group">
+      <label for="nickname">닉네임</label>
+      <div class="input-group">
+        <input type="text" class="form-control" id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required>
+        <div class="input-group-append">
+          <button type="button" class="btn btn-outline-secondary" onclick="checkNickname()">중복 확인</button>
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary" id="signupButton">가입하기</button>
+  </form>
+</div>
+
+<!-- 이메일 인증 모달 -->
+<div class="modal fade" id="emailVerifyModal" tabindex="-1" role="dialog" aria-labelledby="emailVerifyModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="emailVerifyModalLabel">이메일 인증</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="authcode">인증 코드</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="authcode" placeholder="인증 코드를 입력하세요">
+              <div class="input-group-append">
+                <button type="button" class="btn btn-outline-secondary" id="sendAuthCodeButton">인증 코드 전송</button>
+              </div>
+              <div class="invalid-feedback" id="authcodeFeedback">
+                여섯 자리 숫자를 입력하세요.
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" id="verifyButton" onclick="verifyEmail()" disabled>인증 확인</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 공통 스크립트 -->
+<div th:replace="~{common/fragment/script :: common_script}"></div>
+<!-- index.js -->
+<script src="js/signup.js"></script>
+</body>
+</html>

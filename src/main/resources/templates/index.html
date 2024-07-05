@@ -1,54 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyLog</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/image-icon-32x32.png">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #e0f7fa 50%, #ffffff 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-        }
-        .main h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-        .main p {
-            font-size: 18px;
-            margin-bottom: 40px;
-            color: #555;
-        }
-        .main button {
-            padding: 15px 30px;
-            font-size: 18px;
-            color: white;
-            background-color: #333;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .main button:hover {
-            background-color: #555;
-        }
-    </style>
+<head th:replace="~{common/layout/head :: common_head(~{::title},~{::link})}">
+    <title>Welcome To Mylog</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
-
-<!-- 메인 섹션 -->
+<!-- 메인 -->
 <div class="main">
     <h2>Welcome to MyLog</h2>
     <p>간편하게 나만의 블로그를 시작해보세요.</p>
-    <button data-toggle="modal" data-target="#loginModal">시작하기</button>
+    <button id="startButton">시작하기</button>
 </div>
 
 <!-- 로그인/회원가입 모달 -->
@@ -75,49 +36,15 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <p>계정이 없으신가요? <a href="#" th:href="@{/user/signup}">회원가입</a></p>
+                <p>계정이 없으신가요? <a href="#" th:href="@{/signup}">회원가입</a></p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JS 및 jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<script>
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        fetch('/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: email, password: password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.accessToken) {
-                // 토큰을 로컬 스토리지에 저장
-                localStorage.setItem('accessToken', data.accessToken);
-                localStorage.setItem('refreshToken', data.refreshToken);
-
-                // ToDo. 로그인 성공 후 처리 로직
-                console.log('Login successful');
-            } else {
-                alter('로그인에 실패하였습니다');
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-    });
-</script>
-
+<!-- 공통 스크립트 -->
+<div th:replace="~{common/fragment/script :: common_script}"></div>
+<!-- index.js -->
+<script src="js/index.js"></script>
 </body>
 </html>
