@@ -1,19 +1,19 @@
 package com.golym.mylog.common.config;
 
-import com.golym.mylog.common.filter.JwtVerificationFilter;
-import com.golym.mylog.common.utils.JwtTokenUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -25,7 +25,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final JwtTokenUtils jwtTokenUtils;
+    private final AccessDeniedHandler accessDeniedHandler;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     private final String[] EXCLUDE_PATHS = {
             // main
@@ -34,9 +35,12 @@ public class WebSecurityConfig {
             "/css/**", "/images/**", "/js/**",
             // page
             "/signup",
-            "/blog",
+            "/access-denied",
+            "/unauthorized",
+//            "/blog",
             // 비회원 API
-            "/login",
+            "/api/login",
+            "/api/logout",
             "/api/send-authcode",
             "/api/verify-authcode",
             "/api/check-email",
@@ -50,6 +54,11 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
@@ -58,7 +67,6 @@ public class WebSecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        // configuration.setAllowedOrigins(Collections.singletonList(WEB_HOST));
                         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
@@ -72,29 +80,24 @@ public class WebSecurityConfig {
         // csrf disable
         http
                 .csrf(AbstractHttpConfigurer::disable);
-        // Form 로그인 방식 disable
-        http
-                .formLogin(AbstractHttpConfigurer::disable);
-
-        // http basic 인증방식 disable
-        http
-                .httpBasic((AbstractHttpConfigurer::disable));
-
         // 경로별 인가 설정
         http
                 .authorizeHttpRequests((auth) -> auth
                 .requestMatchers(EXCLUDE_PATHS).permitAll()
-                .requestMatchers("/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/blog").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated());
-
-        // 필터 등록
+        // Form 로그인 방식 사용
         http
-                .addFilterBefore(new JwtVerificationFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class);
-
+                .formLogin(AbstractHttpConfigurer::disable);
         // 세션 설정
         http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
+                        .maximumSessions(1)
+                        .expiredUrl("/login?expired=ture"));
+        http
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(authenticationEntryPoint));
 
         return http.build();
     }

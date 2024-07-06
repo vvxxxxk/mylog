@@ -1,20 +1,26 @@
 package com.golym.mylog.controller;
 
-import com.golym.mylog.common.utils.JwtTokenUtils;
-import com.golym.mylog.model.dto.common.ErrorMessageDto;
-import com.golym.mylog.model.dto.common.JwtTokenMappingDto;
+import com.golym.mylog.common.constants.ResponseType;
 import com.golym.mylog.model.dto.request.RequestLoginDto;
-import com.golym.mylog.model.dto.request.RequestReissueTokenDto;
-import com.golym.mylog.model.dto.response.ResponseLoginDto;
-import com.golym.mylog.model.dto.response.ResponseReissueTokenDto;
-import com.golym.mylog.service.JwtTokenService;
+import com.golym.mylog.model.dto.response.ResponseDto;
+import com.golym.mylog.service.UserDetailsServiceImpl;
 import com.golym.mylog.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,39 +31,38 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserService userService;
-    private final JwtTokenService jwtTokenService;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Validated @RequestBody RequestLoginDto params) {
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
-        Authentication authentication = userService.login(params);
+    @PostMapping("/api/login")
+    public ResponseEntity<?> login(@Validated @RequestBody RequestLoginDto params, HttpSession session) {
 
-        if (authentication == null) {
-            return new ResponseEntity<>(ErrorMessageDto.builder()
-                    .code(401)
-                    .status("UNAUTHORIZED")
-                    .message("Invalid email or password")
-                    .build(),
-                    HttpStatus.UNAUTHORIZED);
+        System.out.println("AuthController.login");
+        UserDetails userDetails = userDetailsService.loadUserByUsername(params.getEmail());
+
+        try {
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(params.getEmail(), params.getPassword());
+            Authentication authentication = authenticationManager.authenticate(token);
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(authentication);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+            return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+        } catch (AuthenticationException e) {
+            System.out.println("AuthController.login failed");
+            return new ResponseEntity<>(new ResponseDto(ResponseType.FAIL), HttpStatus.OK);
         }
-
-        // Generate token and Save token to Redis
-        JwtTokenMappingDto jwtTokenMappingDto = jwtTokenService.generateToken(authentication);
-
-        // Return token to client
-        return new ResponseEntity<>(ResponseLoginDto.builder()
-                .userId(jwtTokenUtils.getUserId(authentication)) // test code
-                .accessToken(jwtTokenMappingDto.getAccessToken())
-                .refreshToken(jwtTokenMappingDto.getRefreshToken())
-                .build(), HttpStatus.OK);
     }
 
-    @PostMapping("/api/reissue-token")
-    public ResponseEntity<?> reissueToken(@Validated @RequestBody RequestReissueTokenDto params) {
-
-        ResponseReissueTokenDto responseReissueTokenDto = jwtTokenService.reissueToken(params);
-
-        return new ResponseEntity<>(responseReissueTokenDto, HttpStatus.OK);
+    @PostMapping("/api/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        SecurityContextHolder.clearContext();
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
+
 }

@@ -18,54 +18,54 @@
 <!-- 공통 스크립트 -->
 <div th:replace="~{common/fragment/script :: common_script}"></div>
 <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const accessToken = localStorage.getItem('accessToken');
-                if (accessToken) {
-                    fetchDashboardData(accessToken);
-                } else {
-                    window.location.href = '/';
-                }
-            });
+<!--            document.addEventListener('DOMContentLoaded', function() {-->
+<!--                const accessToken = localStorage.getItem('accessToken');-->
+<!--                if (accessToken) {-->
+<!--                    fetchDashboardData(accessToken);-->
+<!--                } else {-->
+<!--                    window.location.href = '/';-->
+<!--                }-->
+<!--            });-->
 
-            function fetchDashboardData(token) {
-                fetch('/api/post', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.posts || !Array.isArray(data.posts)) {
-                        console.error('API 응답이 올바르지 않습니다:', data);
-                        return;
-                    }
-                    const postContainer = document.getElementById('post-container');
-                    if (!postContainer) {
-                        console.error('post-container 요소를 찾을 수 없습니다.');
-                        return;
-                    }
-                    postContainer.innerHTML = ''; // 기존 내용을 지웁니다.
-                    data.posts.forEach(post => {
-                        const postElement = document.createElement('div');
-                        postElement.className = 'post';
-                        postElement.innerHTML = `
-                            <h2>${post.title}</h2>
-                            <p>${post.description}</p>
-                            <p class="meta">
-                                <span>${post.date}</span>
-                                <span>${post.comments}개의 댓글</span>
-                                <span>${post.likes}개의 좋아요</span>
-                            </p>
-                        `;
-                        postContainer.appendChild(postElement);
-                    });
-                })
-                .catch((error) => {
-                    console.error('대시보드 데이터 요청 중 에러 발생:', error);
-                });
-            }
+<!--            function fetchDashboardData(token) {-->
+<!--                fetch('/api/post', {-->
+<!--                    method: 'GET',-->
+<!--                    headers: {-->
+<!--                        'Authorization': `Bearer ${token}`,-->
+<!--                        'Accept': 'application/json'-->
+<!--                    }-->
+<!--                })-->
+<!--                .then(response => response.json())-->
+<!--                .then(data => {-->
+<!--                    if (!data.posts || !Array.isArray(data.posts)) {-->
+<!--                        console.error('API 응답이 올바르지 않습니다:', data);-->
+<!--                        return;-->
+<!--                    }-->
+<!--                    const postContainer = document.getElementById('post-container');-->
+<!--                    if (!postContainer) {-->
+<!--                        console.error('post-container 요소를 찾을 수 없습니다.');-->
+<!--                        return;-->
+<!--                    }-->
+<!--                    postContainer.innerHTML = ''; // 기존 내용을 지웁니다.-->
+<!--                    data.posts.forEach(post => {-->
+<!--                        const postElement = document.createElement('div');-->
+<!--                        postElement.className = 'post';-->
+<!--                        postElement.innerHTML = `-->
+<!--                            <h2>${post.title}</h2>-->
+<!--                            <p>${post.description}</p>-->
+<!--                            <p class="meta">-->
+<!--                                <span>${post.date}</span>-->
+<!--                                <span>${post.comments}개의 댓글</span>-->
+<!--                                <span>${post.likes}개의 좋아요</span>-->
+<!--                            </p>-->
+<!--                        `;-->
+<!--                        postContainer.appendChild(postElement);-->
+<!--                    });-->
+<!--                })-->
+<!--                .catch((error) => {-->
+<!--                    console.error('대시보드 데이터 요청 중 에러 발생:', error);-->
+<!--                });-->
+<!--            }-->
 </script>
 
 </body>

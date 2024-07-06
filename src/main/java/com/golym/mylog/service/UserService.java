@@ -3,7 +3,6 @@ package com.golym.mylog.service;
 import com.golym.mylog.common.constants.RoleType;
 import com.golym.mylog.common.exception.BadRequestException;
 import com.golym.mylog.common.utils.CodeGenerator;
-import com.golym.mylog.model.dto.request.RequestLoginDto;
 import com.golym.mylog.model.dto.request.RequestSendAuthCodeDto;
 import com.golym.mylog.model.dto.request.RequestSignupDto;
 import com.golym.mylog.model.entity.AuthEmail;
@@ -46,16 +45,6 @@ public class UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
-
-    public Authentication login(RequestLoginDto params) {
-        try {
-            return authenticationManagerBuilder.getObject()
-                    .authenticate(new UsernamePasswordAuthenticationToken(params.getEmail(), params.getPassword()));
-        } catch (UsernameNotFoundException | BadCredentialsException e) {
-            log.warn(e.getMessage());
-            return null;
-        }
-    }
 
     @Async
     public void sendAuthcode(RequestSendAuthCodeDto params) {

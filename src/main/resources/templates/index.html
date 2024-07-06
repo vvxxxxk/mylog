@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head th:replace="~{common/layout/head :: common_head(~{::title},~{::link})}">
     <title>Welcome To Mylog</title>
     <link rel="stylesheet" th:href="@{/css/index.css}">
@@ -9,7 +9,8 @@
 <div class="main">
     <h2>Welcome to MyLog</h2>
     <p>간편하게 나만의 블로그를 시작해보세요.</p>
-    <button id="startButton">시작하기</button>
+    <button th:if="${#authentication.name == 'anonymousUser'}" data-toggle="modal" data-target="#loginModal">로그인 / 회원가입</button>
+    <button th:if="${#authentication.name != 'anonymousUser'}" id="startButton">시작하기</button>
 </div>
 
 <!-- 로그인/회원가입 모달 -->
