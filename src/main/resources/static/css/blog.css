@@ -37,3 +37,11 @@ body {
     padding: 20px;
     overflow: auto;
 }
+
+.new-post-icon .bi {
+    display: flex;
+    justify-content: flex-end; /* 아이콘을 오른쪽 끝으로 배치 */
+    align-items: center;
+    font-size: 1.7rem;
+    cursor: pointer;
+}
