@@ -37,7 +37,7 @@ public class WebSecurityConfig {
             "/signup",
             "/access-denied",
             "/unauthorized",
-//            "/blog",
+            "/blog",
             // 비회원 API
             "/api/login",
             "/api/logout",

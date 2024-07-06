@@ -1,0 +1,28 @@
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* 아이콘과 입력 필드 사이의 간격을 설정 */
+}
+
+.form-inline .form-control {
+    width: 200px;
+}
+
+.bi {
+    font-size: 1.7rem;
+    cursor: pointer;
+}
+
+.bi-gear {
+    color: #007bff; /* 설정 아이콘 색상 */
+}
+
+.bi-box-arrow-right {
+    color: #dc3545; /* 로그아웃 아이콘 색상 */
+    margin-right: 10px;
+}

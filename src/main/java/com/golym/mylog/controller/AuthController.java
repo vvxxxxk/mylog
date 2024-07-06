@@ -65,4 +65,14 @@ public class AuthController {
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 
+    @GetMapping("/api/check-session")
+    public ResponseEntity<?> checkSession() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName())) {
+            return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new ResponseDto(ResponseType.FAIL), HttpStatus.OK);
+    }
 }

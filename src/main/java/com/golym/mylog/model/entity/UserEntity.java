@@ -31,7 +31,7 @@ public class UserEntity {
     private String nickname;
 
     @Column(nullable = true, length = 255)
-    private String profile_image;
+    private String profileImage;
 
     @Column(nullable = false, columnDefinition = "timestamp default current_timestamp")
     private LocalDateTime createAt;

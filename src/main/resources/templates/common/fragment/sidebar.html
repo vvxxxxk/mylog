@@ -1,10 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Sidebar</title>
 </head>
 <body>
+<th:block th:fragment="sidebar(user)">
+    <div class="sidebar">
+<!--        <div class="logo-section">-->
+<!--            <a class="logo-a" th:href="@{/blog}">-->
+<!--                <img class="logo-img" src="/images/logo/text-icon-60x20.png" alt="mylog-text-logo">-->
+<!--            </a>-->
+<!--        </div>-->
+        <div class="profile-section">
+            <div class="profile-image" th:if="${user.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
+            <div class="profile-image" th:unless="${user.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.jpg} + ');'"></div>
+            <p class="profile-nickname" th:text="${user.nickname}">닉네임</p>
+        </div>
+        <div class="line-section"><hr></div>
+        <div class="category-section">
+            <p class="category-title">전체보기</p>
+            <ul class="category-list">
+                <li class="category-item">
+                    <span class="category-toggle-icon">▶</span>
+                    <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 1</a>
+                    <ul>
+                        <li class="category-item">
+                            <span class="category-toggle-icon">▶</span>
+                            <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 1-1</a>
+                        </li>
+                        <li class="category-item">
+                            <span class="category-toggle-icon">▶</span>
+                            <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 1-2</a>
+                            <ul>
+                                <li class="category-item">
+                                    <span class="category-toggle-icon">▶</span>
+                                    <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 1-2-1</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="category-item">
+                    <span class="category-toggle-icon">▶</span>
+                    <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 2</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
+    <script>
+        function toggleSubCategories(element) {
+            const subCategoryList = element.nextElementSibling;
+            const toggleIcon = element.previousElementSibling;
+            if (subCategoryList && subCategoryList.style) {
+                if (subCategoryList.style.display === "none" || subCategoryList.style.display === "") {
+                    subCategoryList.style.display = "block";
+                    toggleIcon.textContent = "▼";
+                } else {
+                    subCategoryList.style.display = "none";
+                    toggleIcon.textContent = "▶";
+                }
+            }
+        }
+    </script>
+</th:block>
 </body>
 </html>

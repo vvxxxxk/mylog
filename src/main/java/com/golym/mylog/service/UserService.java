@@ -3,6 +3,7 @@ package com.golym.mylog.service;
 import com.golym.mylog.common.constants.RoleType;
 import com.golym.mylog.common.exception.BadRequestException;
 import com.golym.mylog.common.utils.CodeGenerator;
+import com.golym.mylog.model.dto.common.UserDto;
 import com.golym.mylog.model.dto.request.RequestSendAuthCodeDto;
 import com.golym.mylog.model.dto.request.RequestSignupDto;
 import com.golym.mylog.model.entity.AuthEmail;
@@ -116,4 +117,17 @@ public class UserService {
     }
 
 
+    public UserDto getUser(String userId) {
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
+
+        return UserDto.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .build();
+    }
 }

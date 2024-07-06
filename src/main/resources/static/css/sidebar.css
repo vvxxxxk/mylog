@@ -1,0 +1,87 @@
+/*
+    .sidebar {
+        width: 300px;                       /* 너비: 300px */
+        background-color: #f8f9fa;          /* 배경색: 연한회색 */
+        padding: 10px 20px;                 /* 내부 여백: 위아래 10px 좌우 20px */
+        border-right: 1px solid #ddd;       /* 오른쪽 경계선: 1px 연한 회색*/
+        position: fixed;                    /* 고정 위치 */
+        height: 100%;                       /* 부모 요소의 100% 높이 */
+        overflow: auto;                     /* 내용이 높이를 초과할 경우 스크롤바 표시 */
+    }
+*/
+
+.logo-section {
+    margin-top: 10px;
+    margin-bottom: 20px; /* 섹션 간격 조절 */
+}
+
+.profile-section {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px; /* 섹션 간격 조절 */
+    position: relative;
+}
+
+.profile-image {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin: 0 auto;
+    display: block;
+}
+
+.profile-nickname {
+    color: #495057;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 20px; /* 닉네임 상단 여백 */
+    margin-bottom: 5px; /* 닉네임 하단 여백 */
+}
+
+.line-section {
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.category-section {
+    width: 100%;
+    padding-left: 0px;
+    margin-top: 20px;
+}
+
+.category-title {
+    color: black;
+    font-size: 1.0em;
+    font-weight: bold;
+}
+
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-list ul {
+    padding-left: 20px;
+    display: none; /* 자식 요소 숨기기 */
+}
+
+.category-item {
+    list-style: none;
+    margin-top: 6px;
+}
+
+.category-item:hover {
+    background-color: #f8f9fa;
+}
+
+.category-item-link {
+    text-decoration: none;
+    color: black;
+}
+
+.category-toggle-icon {
+    margin-right: 5px;
+}
