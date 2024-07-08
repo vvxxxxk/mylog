@@ -41,6 +41,7 @@ public class WebSecurityConfig {
             "/blog",
             "/blog/write",
             "/blog/post",
+            "/api/file/image",
             // #############################################
             // 비회원 API
             "/api/login",

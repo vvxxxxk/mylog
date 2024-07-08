@@ -53,6 +53,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.2'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
 
 //	+------------------------------------------------------------------------+
 //	| Test														             |

@@ -26,6 +26,18 @@ spring:
   redis:
     host: localhost
     port: 6379
+  # multipart
+  servlet:
+    multipart:
+      max-file-size: 5MB
+  # google cloud storage
+  cloud:
+    gcp:
+      storage:
+        credentials:
+          location= classpath: /feat-demo-426606-fe0f6ae0ecc8.json
+        project-id: feat-demo-426606
+        bucket: mylog-bucket
 
 security:
   jwt:

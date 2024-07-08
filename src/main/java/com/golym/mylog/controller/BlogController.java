@@ -137,7 +137,7 @@ public class BlogController {
     }
 
     /* 포스트 작성 */
-    @PostMapping("/api/blog/post")
+    @PostMapping("/blog/post")
     public String createPost(RequestCreatePostDto params) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
