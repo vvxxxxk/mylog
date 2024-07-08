@@ -44,8 +44,7 @@ public class BlogController {
         String userId = authentication.getName();
         log.info("blogMainForm()-userId= {}", userId);
 
-        userId = "U-772a6312635540f6abc596a6652014";
-//        userId = "U-40af35c0ddba463599d7fd68498efb";
+        userId = "U-329fd5e949254d0688aafd809c2e5d";
 
         UserDto user = userService.getUser(userId);
         List<CategoryDto> categoryList = categoryService.getCategoryList(userId);
@@ -64,8 +63,7 @@ public class BlogController {
         String userId = authentication.getName();
         log.info("blogMainForm()-userId= {}", userId);
 
-        userId = "U-772a6312635540f6abc596a6652014";
-//        userId = "U-40af35c0ddba463599d7fd68498efb";
+        userId = "U-329fd5e949254d0688aafd809c2e5d";
 
         UserDto user = userService.getUser(userId);
         List<CategoryDto> categoryList = categoryService.getCategoryList(userId);

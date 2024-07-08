@@ -2,6 +2,8 @@ package com.golym.mylog.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,9 +20,9 @@ public class PostEntity {
     @Column(columnDefinition = "CHAR(32)", nullable = false)
     private String postId;
 
-    // 카테고리와의 1대1 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @ToString.Exclude
     private CategoryEntity category;
 

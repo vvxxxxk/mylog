@@ -29,7 +29,7 @@ public class CategoryEntity {
     @Column(nullable = false, columnDefinition = "timestamp default current_timestamp")
     private LocalDateTime createAt;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @ToString.Exclude
     private List<PostEntity> posts;
 
