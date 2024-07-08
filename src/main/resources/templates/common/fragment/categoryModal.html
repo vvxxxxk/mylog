@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>categoryModal</title>
+</head>
+<body>
+<th:block th:fragment="categoryModal(categoryList)">
+    <!-- 카테고리 관리 모달 -->
+    <div class="modal fade" id="categoryModal" aria-labelledby="categoryModalLabel" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- modal header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalLabel">카테고리 관리</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <!-- modal body -->
+                <div class="modal-body">
+                    <form id="addCategoryForm" class="mb-4">
+                        <label for="categoryName" class="mr-2">카테고리 추가</label>
+                        <div class="form-group form-inline">
+                            <input type="text" class="form-control mr-2" style="flex: 1;" id="categoryName" placeholder="Enter category name" required>
+                            <button type="submit" class="btn btn-success">카테고리 추가</button>
+                        </div>
+                    </form>
+
+                    <!-- Category List -->
+                    <ul class="list-group category-list modal-category-list">
+                        <li th:each="category : ${categoryList}" class="modal-category-item list-group-item d-flex justify-content-between align-items-center">
+                            <a class="category-item-link" th:text="${category.name}"></a>
+                            <span>
+                                <button class="btn btn-sm btn-warning edit-btn" th:attr="data-id=${category.categoryId}">Edit</button>
+                                <button class="btn btn-sm btn-danger delete-btn" th:attr="data-id=${category.categoryId}">Delete</button>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 카테고리 추가
+        function addCategory(categoryId, name) {
+            const newItem = document.createElement("li");
+            newItem.className = "category-item list-group-item d-flex justify-content-between align-items-center";
+            newItem.innerHTML = `
+                <a class="category-item-link">${name}</a>
+                <span>
+                    <button class="btn btn-sm btn-warning edit-btn" data-id="${categoryId}">Edit</button>
+                    <button class="btn btn-sm btn-danger delete-btn" data-id="${categoryId}">Delete</button>
+                </span>
+            `;
+            document.querySelector(".modal-category-list").appendChild(newItem);
+
+            // 삭제 버튼 이벤트 리스너 추가
+            newItem.querySelector('.delete-btn').addEventListener('click', function() {
+                deleteCategory(newItem);
+            });
+        }
+
+        // 카테고리 추가 API
+        document.getElementById("addCategoryForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const categoryName = document.getElementById("categoryName").value;
+
+            if (categoryName) {
+                fetch('/api/blog/category', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name: categoryName })
+                })
+                .then(response => {
+                    if(!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(error.message);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data.category.categoryId);
+                    addCategory(data.category.categoryId, data.category.name);
+                    document.getElementById("categoryName").value = "";
+                })
+                .catch(error => {
+                    console.error("There was a problem with the fetch operation:", error);
+                    alert("Error: " + error.message);
+                });
+            }
+        });
+
+        // 삭제 버튼 이벤트 리스너 추가
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryItem = this.closest('li');
+                deleteCategory(categoryItem);
+            });
+        });
+
+
+        // 카테고리 삭제 API
+        function deleteCategory(categoryItem) {
+            const categoryId = categoryItem.querySelector('.delete-btn').getAttribute('data-id');
+
+            fetch(`/api/blog/category/${categoryId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        throw new Error(error.message);
+                    });
+                }
+                // Remove the category item from the list
+                categoryItem.remove();
+            })
+            .catch(error => {
+                console.error('There was a problem with the delete operation:', error);
+                alert('Error: ' + error.message);
+            });
+        }
+
+        // 카테고리 수정 API
+        function editCategory(categoryItem) {
+            const categoryId = categoryItem.querySelector('.edit-btn').getAttribute('data-id');
+            const currentName = categoryItem.querySelector('.category-item-link').innerText;
+            const newName = prompt('Enter new category name:', currentName);
+
+            if (newName && newName !== currentName) {
+                fetch(`/api/blog/category/${categoryId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name: newName })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(error.message);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    categoryItem.querySelector('.category-item-link').innerText = newName;
+                })
+                .catch(error => {
+                    console.error('There was a problem with the edit operation:', error);
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
+
+        // 수정 버튼 이벤트 리스너 추가
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryItem = this.closest('li');
+                editCategory(categoryItem);
+            });
+        });
+
+        // 카테고리 선택
+        document.querySelectorAll('.modal-category-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const selectedCategoryId = this.querySelector('.category-item-link').getAttribute('data-id');
+                const selectedCategoryName = this.querySelector('.category-item-link').innerText;
+                document.getElementById('selectedCategoryDisplay').innerText = selectedCategoryName;
+                document.getElementById('selectedCategory').value = selectedCategoryId;
+                $('#categoryModal').modal('hide'); // 모달 닫기
+            });
+        });
+    });
+    </script>
+</th:block>
+</body>
+</html>

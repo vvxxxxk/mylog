@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head th:replace="~{common/layout/head :: common_head(~{::title},~{::link})}">
     <title>Mylog</title>
     <link rel="stylesheet" th:href="@{/css/blog.css}">
@@ -11,7 +10,7 @@
 
 <div class="blog-container">
     <!-- 사이드 바 영역 -->
-    <div class="sidebar" th:replace="~{common/fragment/sidebar :: sidebar(${user})}"></div>
+    <div class="sidebar" th:replace="~{common/fragment/sidebar :: sidebar(${user}, ${categoryList})}"></div>
 
 
     <!-- 메인 콘텐츠 영역 -->
@@ -26,25 +25,25 @@
         <div class="content">
             <!-- ToDo. 글 쓰기 버튼 -->
             <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-5"></div>
+                <div class="col-md-2"></div>
+                <div class="col-md-7"></div>
                 <div class="col-md-1">
-                    <a class="new-post-icon" th:href="@{/edit}">
+                    <a class="new-post-icon" th:href="@{/blog/write}">
                         <i class="bi bi-pencil-square"></i>
                     </a>
                 </div>
-                <div class="col-md-3"></div>
+                <div class="col-md-2"></div>
             </div>
             <!-- 라인 -->
             <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-6"><hr></div>
-                <div class="col-md-3"></div>
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><hr></div>
+                <div class="col-md-2"></div>
             </div>
             <!-- 게시글 영역 -->
             <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-6">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
                     <div class="post-list">
                         <div class="post-item mb-4 p-3 border rounded">
                             <h3 class="post-title">My First Blog Post</h3>
@@ -109,7 +108,7 @@
                         </nav>
                     </div>
                 </div>
-                <div class="col-md-3"></div>
+                <div class="col-md-2"></div>
             </div>
         </div>
     </div>

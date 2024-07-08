@@ -39,7 +39,8 @@ public class WebSecurityConfig {
             "/unauthorized",
             // ################## TEST #####################
             "/blog",
-            "/edit",
+            "/blog/write",
+            "/blog/post",
             // #############################################
             // 비회원 API
             "/api/login",
@@ -87,7 +88,7 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                 .requestMatchers(EXCLUDE_PATHS).permitAll()
-                .requestMatchers("/blog").hasAnyRole("ADMIN", "USER")
+//                .requestMatchers("/blog").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated());
         // Form 로그인 방식 사용
         http

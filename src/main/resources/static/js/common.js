@@ -19,7 +19,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         }
     })
     .then(message => {
-        alert(message);
+        //alert(message);
         window.location.href = `/`;
     })
     .catch((error) => {

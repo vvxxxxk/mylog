@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -28,9 +29,24 @@ public class CategoryEntity {
     @Column(nullable = false, columnDefinition = "timestamp default current_timestamp")
     private LocalDateTime createAt;
 
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<PostEntity> posts;
 
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
     }
+
+    @PreRemove
+    private void preRemove() {
+        for (PostEntity post : posts) {
+            post.setCategory(null);
+        }
+    }
+
+    public void updateCategoryName(String name) {
+        this.name = name;
+    }
+
 }

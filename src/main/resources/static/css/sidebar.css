@@ -1,15 +1,3 @@
-/*
-    .sidebar {
-        width: 300px;                       /* 너비: 300px */
-        background-color: #f8f9fa;          /* 배경색: 연한회색 */
-        padding: 10px 20px;                 /* 내부 여백: 위아래 10px 좌우 20px */
-        border-right: 1px solid #ddd;       /* 오른쪽 경계선: 1px 연한 회색*/
-        position: fixed;                    /* 고정 위치 */
-        height: 100%;                       /* 부모 요소의 100% 높이 */
-        overflow: auto;                     /* 내용이 높이를 초과할 경우 스크롤바 표시 */
-    }
-*/
-
 .logo-section {
     margin-top: 10px;
     margin-bottom: 20px; /* 섹션 간격 조절 */

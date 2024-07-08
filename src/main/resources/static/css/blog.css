@@ -45,3 +45,16 @@ body {
     font-size: 1.7rem;
     cursor: pointer;
 }
+
+.category-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+.category-button {
+    margin-right: 20px;
+}
+.category-display {
+    font-size: 16px;
+    color: #555;
+}

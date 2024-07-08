@@ -5,7 +5,7 @@
     <title>Sidebar</title>
 </head>
 <body>
-<th:block th:fragment="sidebar(user)">
+<th:block th:fragment="sidebar(user, categoryList)">
     <div class="sidebar">
 <!--        <div class="logo-section">-->
 <!--            <a class="logo-a" th:href="@{/blog}">-->
@@ -20,30 +20,10 @@
         <div class="line-section"><hr></div>
         <div class="category-section">
             <p class="category-title">전체보기</p>
-            <ul class="category-list">
-                <li class="category-item">
+            <ul class="category-list sidebar-category-list">
+                <li th:each="category : ${categoryList}" class="category-item">
                     <span class="category-toggle-icon">▶</span>
-                    <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 1</a>
-                    <ul>
-                        <li class="category-item">
-                            <span class="category-toggle-icon">▶</span>
-                            <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 1-1</a>
-                        </li>
-                        <li class="category-item">
-                            <span class="category-toggle-icon">▶</span>
-                            <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 1-2</a>
-                            <ul>
-                                <li class="category-item">
-                                    <span class="category-toggle-icon">▶</span>
-                                    <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 1-2-1</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li class="category-item">
-                    <span class="category-toggle-icon">▶</span>
-                    <a class="category-item-link" onclick="toggleSubCategories(this)">카테고리 2</a>
+                    <a class="category-item-link" th:text="${category.name}"></a>
                 </li>
             </ul>
         </div>

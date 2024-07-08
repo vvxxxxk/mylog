@@ -18,13 +18,16 @@ public class PostEntity {
     @Column(columnDefinition = "CHAR(32)", nullable = false)
     private String postId;
 
+    // 카테고리와의 1대1 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = true)
+    @ToString.Exclude
+    private CategoryEntity category;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private UserEntity user;
-
-    @Column(nullable = true, length = 255)
-    private String thumbnail;
 
     @Column(nullable = false, length = 255)
     private String title;
@@ -58,5 +61,9 @@ public class PostEntity {
     @PreUpdate
     protected void onUpdate() {
         this.updateAt = LocalDateTime.now();
+    }
+
+    public void setCategory(CategoryEntity category) {
+        this.category = category;
     }
 }

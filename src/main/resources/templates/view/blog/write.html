@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head th:replace="~{common/layout/head :: common_head(~{::title},~{::link})}">
+    <title>Mylog</title>
+    <link rel="stylesheet" th:href="@{/css/blog.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+</head>
+<body>
+
+<div class="blog-container">
+    <!-- 사이드 바 영역 -->
+    <div class="sidebar" th:replace="~{common/fragment/sidebar :: sidebar(${user}, ${categoryList})}"></div>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <div class="main-content">
+        <!-- 헤더 영역 -->
+        <div class="header" th:replace="~{common/fragment/header :: header(${user})}"></div>
+
+        <!-- 빈 영역 -->
+        <div class="none-area"></div>
+
+        <!-- 컨텐츠 영역 -->
+        <div class="content">
+            <!-- ToDo. 글 쓰기 버튼 -->
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-9"></div>
+                <div class="col-md-1">
+                    <a class="new-post-icon" th:href="@{/blog/write}">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+            <!-- 라인 -->
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10"><hr></div>
+                <div class="col-md-1"></div>
+            </div>
+            <!-- 에디터 -->
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <form class="edit-form" method="post" th:action="@{/blog/post}" th:object="${postDto}" id="post-write-form">
+
+                        <!-- 카테고리 선택 버튼과 표시 영역 -->
+                        <div class="form-group category-container">
+                            <button type="button" class="btn btn-primary category-button" data-toggle="modal" data-target="#categoryModal">카테고리 선택</button>
+                            <span id="selectedCategoryDisplay" class="category-display">선택된 카테고리 없음</span>
+                        </div>
+                        <!-- Hidden field to store selected category -->
+                        <input type="hidden" name="selectedCategory" id="selectedCategory">
+
+                        <!-- 제목 -->
+                        <div class="form-group">
+                            <input class="form-control" type="text" id="title" name="title" placeholder="글 제목을 입력해주세요." max="255" required>
+                        </div>
+
+
+                        <!-- 내용 -->
+                        <div class="form-group">
+                            <div id="toast-editor"></div>
+                        </div>
+
+                    </form>
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 카테고리 관리 모달창 -->
+<div class="categoryModal" th:replace="~{common/fragment/categoryModal :: categoryModal(${categoryList})}"></div>
+
+
+<!-- 공통 스크립트 -->
+<div th:replace="~{common/fragment/script :: common_script}"></div>
+<!-- toast ui 스크립트-->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+
+<script>
+    toastui.Editor.setLanguage(['ko', 'ko-KR'], {
+        Markdown: '마크다운',
+        WYSIWYG: '일반',
+        Write: '편집하기',
+        Preview: '미리보기',
+        Headings: '제목크기',
+        Paragraph: '본문',
+        Bold: '굵게',
+        Italic: '기울임꼴',
+        Strike: '취소선',
+        Code: '인라인 코드',
+        Line: '문단나눔',
+        Blockquote: '인용구',
+        'Unordered list': '글머리 기호',
+        'Ordered list': '번호 매기기',
+        Task: '체크박스',
+        Indent: '들여쓰기',
+        Outdent: '내어쓰기',
+        'Insert link': '링크 삽입',
+        'Insert CodeBlock': '코드블럭 삽입',
+        'Insert table': '표 삽입',
+        'Insert image': '이미지 삽입',
+        Heading: '제목',
+        'Image URL': '이미지 주소',
+        'Select image file': '이미지 파일을 선택하세요.',
+        'Choose a file': '파일 선택',
+        'No file': '선택된 파일 없음',
+        Description: '설명',
+        OK: '확인',
+        More: '더 보기',
+        Cancel: '취소',
+        File: '파일',
+        URL: '주소',
+        'Link text': '링크 텍스트',
+        'Add row to up': '위에 행 추가',
+        'Add row to down': '아래에 행 추가',
+        'Add column to left': '왼쪽에 열 추가',
+        'Add column to right': '오른쪽에 열 추가',
+        'Remove row': '행 삭제',
+        'Remove column': '열 삭제',
+        'Align column to left': '열 왼쪽 정렬',
+        'Align column to center': '열 가운데 정렬',
+        'Align column to right': '열 오른쪽 정렬',
+        'Remove table': '표 삭제',
+        'Would you like to paste as table?': '표형태로 붙여 넣겠습니까?',
+        'Text color': '글자 색상',
+        'Auto scroll enabled': '자동 스크롤 켜짐',
+        'Auto scroll disabled': '자동 스크롤 꺼짐',
+        'Choose language': '언어 선택',
+    });
+
+    const editor = new toastui.Editor({
+        el: document.querySelector('#toast-editor'),
+        height: '800px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        language: 'ko',
+        toolbarItems: [
+            ['heading', 'bold', 'italic', 'strike'],
+            ['hr'],
+            ['ul', 'ol'],
+            ['code'],
+            ['table', 'image', 'link']
+        ],
+        hooks: {
+            addImageBlobHook: (blob, callback) => {
+                let imgurl = uploadImage(blob);
+                callback(imgurl, "첨부 이미지")
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
