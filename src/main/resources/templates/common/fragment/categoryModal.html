@@ -31,7 +31,7 @@
                     <!-- Category List -->
                     <ul class="list-group category-list modal-category-list">
                         <li th:each="category : ${categoryList}" class="modal-category-item list-group-item d-flex justify-content-between align-items-center">
-                            <a class="category-item-link" th:text="${category.name}"></a>
+                            <a class="category-item-link" th:text="${category.name}" th:attr="data-id=${category.categoryId}"></a>
                             <span>
                                 <button class="btn btn-sm btn-warning edit-btn" th:attr="data-id=${category.categoryId}">Edit</button>
                                 <button class="btn btn-sm btn-danger delete-btn" th:attr="data-id=${category.categoryId}">Delete</button>
@@ -55,7 +55,7 @@
             const newItem = document.createElement("li");
             newItem.className = "category-item list-group-item d-flex justify-content-between align-items-center";
             newItem.innerHTML = `
-                <a class="category-item-link">${name}</a>
+                <a class="category-item-link" data-id="${categoryId}">${name}</a>
                 <span>
                     <button class="btn btn-sm btn-warning edit-btn" data-id="${categoryId}">Edit</button>
                     <button class="btn btn-sm btn-danger delete-btn" data-id="${categoryId}">Delete</button>
@@ -66,6 +66,10 @@
             // 삭제 버튼 이벤트 리스너 추가
             newItem.querySelector('.delete-btn').addEventListener('click', function() {
                 deleteCategory(newItem);
+            });
+            // 수정 버튼 이벤트 리스터 추가
+            newItem.querySelector('.edit-btn').addEventListener('click', function() {
+                editCategory(newItem);
             });
         }
 
@@ -184,7 +188,7 @@
                 const selectedCategoryId = this.querySelector('.category-item-link').getAttribute('data-id');
                 const selectedCategoryName = this.querySelector('.category-item-link').innerText;
                 document.getElementById('selectedCategoryDisplay').innerText = selectedCategoryName;
-                document.getElementById('selectedCategory').value = selectedCategoryId;
+                document.getElementById('categoryId').value = selectedCategoryId;
                 $('#categoryModal').modal('hide'); // 모달 닫기
             });
         });

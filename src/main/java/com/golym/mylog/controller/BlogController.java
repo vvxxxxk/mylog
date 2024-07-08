@@ -6,10 +6,12 @@ import com.golym.mylog.common.exception.ConflictException;
 import com.golym.mylog.model.dto.common.CategoryDto;
 import com.golym.mylog.model.dto.common.UserDto;
 import com.golym.mylog.model.dto.request.RequestCreateCategoryDto;
+import com.golym.mylog.model.dto.request.RequestCreatePostDto;
 import com.golym.mylog.model.dto.request.RequestUpdateCategoryNameDto;
 import com.golym.mylog.model.dto.response.ResponseCreateCategoryDto;
 import com.golym.mylog.model.dto.response.ResponseDto;
 import com.golym.mylog.service.CategoryService;
+import com.golym.mylog.service.PostService;
 import com.golym.mylog.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class BlogController {
 
     private final UserService userService;
     private final CategoryService categoryService;
+    private final PostService postService;
 
 
     /* 블로그 메인 폼 이동 */
@@ -74,12 +77,6 @@ public class BlogController {
 
 
         return "/view/blog/write";
-    }
-
-    /* ToDo 글 작성 */
-    @PostMapping("/blog/post")
-    public void posting() {
-
     }
 
     /* 카테고리 추가 */
@@ -137,6 +134,22 @@ public class BlogController {
         // 카테고리명 수정
         categoryService.editCategoryName(categoryId, params.getName());
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
+
+    /* 포스트 작성 */
+    @PostMapping("/api/blog/post")
+    public String createPost(RequestCreatePostDto params) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        // 카테고리가 비어있을 경우 null
+        if (params.getCategoryId().isEmpty())
+            params.setCategoryId(null);
+
+        postService.createPost(userId, params);
+
+        return "redirect:/blog";
     }
 
 }
