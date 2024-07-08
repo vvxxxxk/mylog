@@ -176,6 +176,11 @@
         // 카테고리 선택
         document.querySelectorAll('.modal-category-item').forEach(item => {
             item.addEventListener('click', function() {
+                // 클릭된 요소가 edit-btn이나 delete-btn일 경우 카테고리 선택을 방지
+                if (event.target.classList.contains('edit-btn') || event.target.classList.contains('delete-btn')) {
+                    return;
+                }
+
                 const selectedCategoryId = this.querySelector('.category-item-link').getAttribute('data-id');
                 const selectedCategoryName = this.querySelector('.category-item-link').innerText;
                 document.getElementById('selectedCategoryDisplay').innerText = selectedCategoryName;

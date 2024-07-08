@@ -45,26 +45,33 @@
                 <div class="col-md-10">
                     <form class="edit-form" method="post" th:action="@{/blog/post}" th:object="${postDto}" id="post-write-form">
 
-                        <!-- 카테고리 선택 버튼과 표시 영역 -->
-                        <div class="form-group category-container">
-                            <button type="button" class="btn btn-primary category-button" data-toggle="modal" data-target="#categoryModal">카테고리 선택</button>
-                            <span id="selectedCategoryDisplay" class="category-display">선택된 카테고리 없음</span>
-                        </div>
-                        <!-- Hidden field to store selected category -->
-                        <input type="hidden" name="selectedCategory" id="selectedCategory">
 
                         <!-- 제목 -->
                         <div class="form-group">
                             <input class="form-control" type="text" id="title" name="title" placeholder="글 제목을 입력해주세요." max="255" required>
                         </div>
 
+                        <!-- 카테고리 선택 버튼과 표시 영역 -->
+                        <div class="form-group category-container">
+                            <button type="button" class="btn btn-primary category-button" data-toggle="modal" data-target="#categoryModal">카테고리 선택</button>
+                            <span id="selectedCategoryDisplay" class="category-display">선택된 카테고리 없음</span>
+                        </div>
+                        <input type="hidden" name="selectedCategory" id="selectedCategory">
 
                         <!-- 내용 -->
                         <div class="form-group">
                             <div id="toast-editor"></div>
                         </div>
 
+                        <!-- 글 작성 버튼 -->
+                        <div class="form-group text-right">
+                            <button type="submit" class="btn btn-success">작성하기</button>
+                        </div>
+
                     </form>
+
+                    <!-- 빈 영역 -->
+                    <div class="none-area"></div>
 
                 </div>
                 <div class="col-md-1"></div>
