@@ -158,12 +158,34 @@
                 ['table', 'image', 'link']
             ],
             hooks: {
-                addImageBlobHook: (blob, callback) => {
-                    let imgurl = uploadImage(blob);
-                    callback(imgurl, "첨부 이미지")
+                addImageBlobHook: async (blob, callback) => {
+                    let url = await uploadImage(blob);
+                    callback(url, "이미지")
                 }
             }
         });
+
+        async function uploadImage(blob) {
+            try {
+                const formData = new FormData();
+                formData.append('image', blob);
+
+                const response = await fetch('/api/file/image', {
+                  method: 'POST',
+                  body: formData,
+                });
+
+                if (!response.ok) {
+                  throw new Error(`Image upload failed with status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log(data.url);
+                return data.url;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                return null;
+            }
+        }
 
         // 글 작성
         document.getElementById('post-write-form').addEventListener('submit', function(event) {

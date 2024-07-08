@@ -1,5 +1,7 @@
 package com.golym.mylog.controller;
 
+import com.golym.mylog.common.constants.ResponseType;
+import com.golym.mylog.model.dto.response.ResponseDto;
 import com.golym.mylog.model.dto.response.ResponseUploadImageDto;
 import com.golym.mylog.service.FileService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class FileController {
         String url = fileService.uploadImage(image);
 
         return new ResponseEntity<>(ResponseUploadImageDto.builder()
+                .response(new ResponseDto(ResponseType.SUCCESS))
                 .url(url)
                 .build(), HttpStatus.OK);
     }
