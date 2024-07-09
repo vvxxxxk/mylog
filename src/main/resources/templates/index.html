@@ -9,8 +9,7 @@
 <div class="main">
     <h2>Welcome to MyLog</h2>
     <p>간편하게 나만의 블로그를 시작해보세요.</p>
-    <button th:if="${#authentication.name == 'anonymousUser'}" data-toggle="modal" data-target="#loginModal">로그인 / 회원가입</button>
-    <button th:if="${#authentication.name != 'anonymousUser'}" id="startButton">시작하기</button>
+    <button id="startButton" th:href="@{/main}">시작하기</button>
 </div>
 
 <!-- 로그인/회원가입 모달 -->
@@ -46,6 +45,13 @@
 <!-- 공통 스크립트 -->
 <div th:replace="~{common/fragment/script :: common_script}"></div>
 <!-- index.js -->
-<script src="js/index.js"></script>
+<!--<script src="js/index.js"></script>-->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("startButton").addEventListener("click", function() {
+            window.location.href = "/main";
+        });
+    });
+</script>
 </body>
 </html>

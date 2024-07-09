@@ -4,22 +4,30 @@ import com.golym.mylog.common.constants.ResponseType;
 import com.golym.mylog.common.exception.BadRequestException;
 import com.golym.mylog.common.exception.ConflictException;
 import com.golym.mylog.model.dto.common.CategoryDto;
+import com.golym.mylog.model.dto.common.PostDto;
 import com.golym.mylog.model.dto.request.RequestCreateCategoryDto;
 import com.golym.mylog.model.dto.request.RequestCreatePostDto;
 import com.golym.mylog.model.dto.request.RequestUpdateCategoryNameDto;
 import com.golym.mylog.model.dto.response.ResponseCreateCategoryDto;
 import com.golym.mylog.model.dto.response.ResponseDto;
+import com.golym.mylog.model.dto.response.ResponseGetPostsDto;
 import com.golym.mylog.service.CategoryService;
 import com.golym.mylog.service.PostService;
 import com.golym.mylog.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -101,5 +109,17 @@ public class BlogController {
 
         postService.createPost(userId, params);
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
+
+    /** 포스트 조회 **/
+    @GetMapping("/post")
+    public ResponseEntity<?> getPosts(@PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        List<PostDto> postList = postService.getPostList(pageable);
+
+        return new ResponseEntity<>(ResponseGetPostsDto.builder()
+                .response(new ResponseDto(ResponseType.SUCCESS))
+                .postList(postList)
+                .build(),
+                HttpStatus.OK);
     }
 }

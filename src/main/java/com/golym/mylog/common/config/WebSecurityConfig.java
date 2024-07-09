@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,20 +30,21 @@ public class WebSecurityConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     private final String[] EXCLUDE_PATHS = {
-            // main
-            "/",
             // resource
             "/css/**", "/images/**", "/js/**",
             // page
-            "/signup",
+            "/",
             "/access-denied",
             "/unauthorized",
+            "/signup",
+            "/main",
             // ################## TEST #####################
             "/blog",
             "/blog/write",
-            "/blog/post",
             "/api/file/image",
             // #############################################
+            // View
+            "/blog/post/{postId}",
             // 비회원 API
             "/api/auth/login",
             "/api/auth/logout",
@@ -89,6 +91,7 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                 .requestMatchers(EXCLUDE_PATHS).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/blog/post").permitAll()
 //                .requestMatchers("/blog").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated());
         // Form 로그인 방식 사용

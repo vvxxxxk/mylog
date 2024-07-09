@@ -19,10 +19,14 @@
 }
 
 .bi-gear {
-    color: #007bff; /* 설정 아이콘 색상 */
+    color: #666666;
 }
 
 .bi-box-arrow-right {
-    color: #dc3545; /* 로그아웃 아이콘 색상 */
+    color: #dc3545;
+    margin-right: 10px;
+}
+
+.bi-box-arrow-in-right {
     margin-right: 10px;
 }

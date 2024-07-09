@@ -7,11 +7,11 @@
 <body>
 <th:block th:fragment="sidebar(user, categoryList)">
     <div class="sidebar">
-        <div class="logo-section">
-            <a class="logo-a" th:href="@{/blog}">
-                <img class="logo-img" src="/images/logo/text-icon-60x20.png" alt="mylog-text-logo">
-            </a>
-        </div>
+<!--        <div class="logo-section">-->
+<!--            <a class="logo-a" th:href="@{/blog}">-->
+<!--                <img class="logo-img" src="/images/logo/text-icon-60x20.png" alt="mylog-text-logo">-->
+<!--            </a>-->
+<!--        </div>-->
         <div class="profile-section">
             <div class="profile-image" th:if="${user.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
             <div class="profile-image" th:unless="${user.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.jpg} + ');'"></div>

@@ -8,12 +8,50 @@
 <th:block th:fragment="header(user)">
     <div class="header">
         <div class="header-left"></div>
-        <div class="header-right">
+        <div th:if="${#authentication.name == 'anonymousUser'}" class="header-right">
             <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <input class="form-control mr-sm-1" type="search" placeholder="Search" aria-label="Search" style="height: 36px">
+            </form>
+<!--            <i class="bi bi-gear settings-icon"></i>-->
+            <!-- 로그인 버튼 -->
+            <button class="btn btn-outline-primary" data-toggle="modal" data-target="#loginModal" style="height: 36px">Login</button>
+        </div>
+        <div th:if="${#authentication.name != 'anonymousUser'}" class="header-right">
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-1" type="search" placeholder="Search" aria-label="Search" style="height: 36px">
             </form>
             <i class="bi bi-gear settings-icon"></i>
-            <i class="bi bi-box-arrow-right"></i>
+            <button  type="submit" class="btn btn-outline-danger" id="logoutButton" style="height: 36px">Logout</button>
+        </div>
+    </div>
+
+    <!-- 로그인/회원가입 모달 -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">로그인 / 회원가입</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 로그인/회원가입 폼 내용 -->
+                    <form th:action="@{/login}" id="loginForm" method="post">
+                        <div class="form-group">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="이메일을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요">
+                        </div>
+                        <button type="submit" class="btn btn-primary">로그인</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <p>계정이 없으신가요? <a href="#" th:href="@{/signup}">회원가입</a></p>
+                </div>
+            </div>
         </div>
     </div>
 </th:block>

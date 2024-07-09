@@ -20,7 +20,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     })
     .then(message => {
         //alert(message);
-        window.location.href = `/`;
+        window.location.href = `/main`;
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -46,7 +46,7 @@ document.getElementById('logoutButton').addEventListener('click', function(event
     })
     .then(data => {
         if (data.status == true) {
-            window.location.href = '/';
+            window.location.href = '/main';
         } else {
             alert('로그아웃에 실패하였습니다: ' + data.message);
         }

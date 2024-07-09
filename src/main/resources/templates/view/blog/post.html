@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head th:replace="~{common/layout/head :: common_head(~{::title},~{::link})}">
+    <title>Mylog</title>
+    <link rel="stylesheet" th:href="@{/css/blog.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+</head>
+<body>
+
+<div class="blog-container">
+
+
+    <!-- 메인 콘텐츠 영역 -->
+    <div class="main-content">
+        <!-- 헤더 영역 -->
+        <div class="header" th:replace="~{common/fragment/header :: header(${user})}"></div>
+
+        <!-- 빈 영역 -->
+        <div class="none-area"></div>
+
+        <!-- 컨텐츠 영역 -->
+        <div class="content">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-1 flex-container"></div>
+                <div class="col-md-5"></div>
+                <div class="col-md-3"></div>
+            </div>
+            <!-- 라인 -->
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6"><hr></div>
+                <div class="col-md-3"></div>
+            </div>
+            <!-- 게시글 영역 -->
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <h1 th:text="${post.title}">Post Title</h1>
+                    <hr>
+                    <div id="viewer" style="margin: 20px;"></div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+    </div>
+</div>
+<!-- 공통 스크립트 -->
+<div th:replace="~{common/fragment/script :: common_script}"></div>
+<!-- toast ui 스크립트-->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // 서버에서 전달된 content를 JavaScript 변수로 변환
+    const content = /*[[${post.content}]]*/ '';
+
+    // 데이터 출력 확인
+    console.log("Content from server:", content);
+
+    // TOAST UI Viewer 초기화
+    const viewer = new toastui.Editor.factory({
+        el: document.querySelector('#viewer'),
+        initialValue: content,
+        viewer: true,
+        height: '600px'
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head th:replace="~{common/layout/head :: common_head(~{::title},~{::link})}">
+    <title>Mylog</title>
+    <link rel="stylesheet" th:href="@{/css/blog.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+</head>
+<body>
+
+<div class="blog-container">
+
+
+    <!-- 메인 콘텐츠 영역 -->
+    <div class="main-content">
+        <!-- 헤더 영역 -->
+        <div class="header" th:replace="~{common/fragment/header :: header(${user})}"></div>
+
+        <!-- 빈 영역 -->
+        <div class="none-area"></div>
+
+        <!-- 컨텐츠 영역 -->
+        <div class="content">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-1 flex-container"><b class="flex-item post-title">최신 포스트</b></div>
+                <div class="col-md-7"></div>
+                <div class="col-md-2"></div>
+            </div>
+            <!-- 라인 -->
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><hr></div>
+                <div class="col-md-2"></div>
+            </div>
+            <!-- 게시글 영역 -->
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="post-list" id="post-list">
+                        <div th:each="post : ${postList}" class="post-item mb-4 p-3 border rounded">
+                            <a th:href="@{/blog/post/{postId}(postId=${post.postId})}" class="post-item-link">
+                                <h3 class="post-title" th:text="${post.title}">My First Blog Post</h3>
+                                <p class="post-content" th:text="${post.summary}">This is the content of my first blog post. It contains some interesting information about the topic of my blog. I hope you find it useful and engaging!</p>
+                                <p class="text-muted">
+                                    <small th:text="'Category: ' + ${post.category}">Category: General</small>
+                                    <span class="mx-2">|</span>
+                                    <small th:text="${post.createAt}">2024-07-06 10:00</small>
+                                    <span class="mx-2">|</span>
+                                    <small th:text="'조회수: ' + ${post.viewCount}">조회수: 10</small>
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 공통 스크립트 -->
+<div th:replace="~{common/fragment/script :: common_script}"></div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log("DOM fully loaded and parsed");
+        let currentPage = 0;
+        const pageSize = 5; // 페이지 당 항목 수
+        const postListElement = document.getElementById("post-list");
+
+        function loadMorePosts() {
+            console.log("Loading more posts...");
+            currentPage++;
+            fetch(`/api/blog/post?page=${currentPage}&size=${pageSize}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data); // Debugging
+                    data.postList.forEach(post => {
+                        const postItem = document.createElement("div");
+                        postItem.className = "post-item mb-4 p-3 border rounded";
+                        postItem.innerHTML = `
+                            <h3 class="post-title">${post.title}</h3>
+                            <p class="post-content">${post.summary}</p>
+                            <p class="text-muted">
+                                <small>Category: ${post.category}</small>
+                                <span class="mx-2">|</span>
+                                <small>${post.createAt}</small>
+                                <span class="mx-2">|</span>
+                                <small>조회수: ${post.viewCount}</small>
+                            </p>
+                        `;
+                        postListElement.appendChild(postItem);
+                    });
+                })
+                .catch(error => console.error("There was a problem with the fetch operation:", error));
+        }
+
+        window.addEventListener("scroll", () => {
+            console.log("Scrolled");
+            if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+                console.log("Bottom of page reached");
+                loadMorePosts();
+            }
+        });
+    });
+</script>
+</body>
+</html>
