@@ -20,28 +20,36 @@
 
         <!-- 컨텐츠 영역 -->
         <div class="content">
-            <div class="row">
+            <!-- 제목 -->
+            <div class="row content-title-div">
                 <div class="col-md-3"></div>
-                <div class="col-md-1 flex-container"></div>
-                <div class="col-md-5"></div>
-                <div class="col-md-3"></div>
-            </div>
-            <!-- 라인 -->
-            <div class="row">
-                <div class="col-md-3"></div>
-                <div class="col-md-6"><hr></div>
+                <div class="col-md-6">
+                    <h1 class="content-title" th:text="${post.title}"></h1>
+                    <p class="text-muted">
+                        <small th:text="'Writer: ' + ${post.writer}">Writer: user</small>
+                        <span class="mx-2">|</span>
+                        <small th:text="'Category: ' + ${post.category}">Category: General</small>
+                        <span class="mx-2">|</span>
+                        <small th:text="${post.createAt}">2024-07-06 10:00</small>
+                        <span class="mx-2">|</span>
+                        <small th:text="'조회수: ' + ${post.viewCount}">조회수: 10</small>
+                        <span class="mx-2">|</span>
+                        <small th:text="'댓글: ' + ${post.commentCount}">조회수: 10</small>
+                    </p>
+                    <hr>
+                </div>
                 <div class="col-md-3"></div>
             </div>
             <!-- 게시글 영역 -->
             <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-6">
-                    <h1 th:text="${post.title}">Post Title</h1>
-                    <hr>
                     <div id="viewer" style="margin: 20px;"></div>
+                    <hr>
                 </div>
                 <div class="col-md-3"></div>
             </div>
+        </div>
     </div>
 </div>
 <!-- 공통 스크립트 -->
@@ -63,6 +71,7 @@
         viewer: true,
         height: '600px'
     });
+
     /*]]>*/
 </script>
 </body>

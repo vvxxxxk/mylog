@@ -58,6 +58,9 @@ public class ViewController {
                                @PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
         List<PostDto> postList = postService.getPostList(pageable);
         model.addAttribute("postList", postList);
+        for (PostDto postDto : postList) {
+            System.out.println("postDto.getSummary() = " + postDto.getSummary());
+        }
         return "/view/blog/main";
     }
 

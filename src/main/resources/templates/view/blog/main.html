@@ -9,7 +9,6 @@
 
 <div class="blog-container">
 
-
     <!-- 메인 콘텐츠 영역 -->
     <div class="main-content">
         <!-- 헤더 영역 -->
@@ -42,11 +41,15 @@
                                 <h3 class="post-title" th:text="${post.title}">My First Blog Post</h3>
                                 <p class="post-content" th:text="${post.summary}">This is the content of my first blog post. It contains some interesting information about the topic of my blog. I hope you find it useful and engaging!</p>
                                 <p class="text-muted">
+                                    <small th:text="'Writer: ' + ${post.writer}">Writer: user</small>
+                                    <span class="mx-2">|</span>
                                     <small th:text="'Category: ' + ${post.category}">Category: General</small>
                                     <span class="mx-2">|</span>
                                     <small th:text="${post.createAt}">2024-07-06 10:00</small>
                                     <span class="mx-2">|</span>
                                     <small th:text="'조회수: ' + ${post.viewCount}">조회수: 10</small>
+                                    <span class="mx-2">|</span>
+                                    <small th:text="'댓글: ' + ${post.commentCount}">조회수: 10</small>
                                 </p>
                             </a>
                         </div>
@@ -82,15 +85,21 @@
                         const postItem = document.createElement("div");
                         postItem.className = "post-item mb-4 p-3 border rounded";
                         postItem.innerHTML = `
-                            <h3 class="post-title">${post.title}</h3>
-                            <p class="post-content">${post.summary}</p>
-                            <p class="text-muted">
-                                <small>Category: ${post.category}</small>
-                                <span class="mx-2">|</span>
-                                <small>${post.createAt}</small>
-                                <span class="mx-2">|</span>
-                                <small>조회수: ${post.viewCount}</small>
-                            </p>
+                            <a href="/blog/post/${post.postId}" class="post-item-link">
+                                <h3 class="post-title">${post.title}</h3>
+                                <p class="post-content">${post.summary}</p>
+                                <p class="text-muted">
+                                    <small>Writer: ${post.writer}</small>
+                                    <span class="mx-2">|</span>
+                                    <small>Category: ${post.category}</small>
+                                    <span class="mx-2">|</span>
+                                    <small>${post.createAt}</small>
+                                    <span class="mx-2">|</span>
+                                    <small>조회수: ${post.viewCount}</small>
+                                    <span class="mx-2">|</span>
+                                    <small>댓글: ${post.commentCount}</small>
+                                </p>
+                            </a>
                         `;
                         postListElement.appendChild(postItem);
                     });

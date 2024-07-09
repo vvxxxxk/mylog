@@ -1,5 +1,6 @@
 package com.golym.mylog.model.dto.common;
 
+import com.golym.mylog.common.utils.MarkdownConvertor;
 import com.golym.mylog.model.entity.PostEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +33,7 @@ public class PostDto {
         this.category = postEntity.getCategory() == null ? null : postEntity.getCategory().getName();
         this.title = postEntity.getTitle();
         this.content = postEntity.getContent();
-        this.summary = summarizeContent(removeImageUrls(postEntity.getContent()));
+        this.summary = summarizeContent(MarkdownConvertor.convertMarkdownToPlainText(removeImageUrls(postEntity.getContent())));
         this.viewCount = postEntity.getViewCount();
         this.createAt = postEntity.getCreateAt();
         this.updateAt = postEntity.getUpdateAt();
