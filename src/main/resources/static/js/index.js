@@ -1,6 +1,6 @@
 document.getElementById('startButton').addEventListener('click', async function() {
     try {
-        const response = await fetch('/api/check-session', {
+        const response = await fetch('/api/auth/check-session', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

@@ -44,13 +44,13 @@ public class WebSecurityConfig {
             "/api/file/image",
             // #############################################
             // 비회원 API
-            "/api/login",
-            "/api/logout",
-            "/api/send-authcode",
-            "/api/verify-authcode",
-            "/api/check-email",
-            "/api/check-nickname",
-            "/api/reissue-token",
+            "/api/auth/login",
+            "/api/auth/logout",
+            "/api/user/signup",
+            "/api/user/send-authcode",
+            "/api/user/verify-authcode",
+            "/api/user/check-email",
+            "/api/user/check-nickname",
     };
 
     @Bean

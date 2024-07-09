@@ -43,7 +43,7 @@
             <div class="row">
                 <div class="col-md-1"></div>
                 <div class="col-md-10">
-                    <form class="edit-form" method="post" th:action="@{/blog/post}" th:object="${postDto}" id="post-write-form">
+                    <form class="edit-form" method="post" th:action="@{/api/blog/post}" th:object="${postDto}" id="post-write-form">
 
 
                         <!-- 제목 -->
@@ -190,10 +190,32 @@
         // 글 작성
         document.getElementById('post-write-form').addEventListener('submit', function(event) {
             event.preventDefault();
+            const title = document.getElementById('title').value;
             const content = editor.getMarkdown(); // 또는 editor.getHTML(); 으로 HTML 내용 가져오기
+            const categoryId = document.getElementById('categoryId').value;
             document.getElementById('content').value = content;
 
-            this.submit();
+            fetch("/api/blog/post", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title: title,
+                                       content: content,
+                                       categoryId: categoryId})
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status == true) {
+                window.location.href = `/blog`;
+              } else {
+                alert('글 작성이 실패하였습니다.');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('서버와의 통신 중 오류가 발생했습니다.');
+            });
         });
     });
 

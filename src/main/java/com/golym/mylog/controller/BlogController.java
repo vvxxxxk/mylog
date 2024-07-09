@@ -4,7 +4,6 @@ import com.golym.mylog.common.constants.ResponseType;
 import com.golym.mylog.common.exception.BadRequestException;
 import com.golym.mylog.common.exception.ConflictException;
 import com.golym.mylog.model.dto.common.CategoryDto;
-import com.golym.mylog.model.dto.common.UserDto;
 import com.golym.mylog.model.dto.request.RequestCreateCategoryDto;
 import com.golym.mylog.model.dto.request.RequestCreatePostDto;
 import com.golym.mylog.model.dto.request.RequestUpdateCategoryNameDto;
@@ -20,14 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
-@Controller
+@RestController
+@RequestMapping("/api/blog")
 @RequiredArgsConstructor
 public class BlogController {
 
@@ -35,50 +31,8 @@ public class BlogController {
     private final CategoryService categoryService;
     private final PostService postService;
 
-
-    /* 블로그 메인 폼 이동 */
-    @GetMapping("/blog")
-    public String blogMainForm(Model model) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
-        log.info("blogMainForm()-userId= {}", userId);
-
-        userId = "U-329fd5e949254d0688aafd809c2e5d";
-
-        UserDto user = userService.getUser(userId);
-        List<CategoryDto> categoryList = categoryService.getCategoryList(userId);
-        log.info("user= {}", user);
-        model.addAttribute("user", user);
-        model.addAttribute("categoryList", categoryList);
-
-
-        return "/view/blog/blog";
-    }
-
-    /* 글작성 폼 이동 */
-    @GetMapping("/blog/write")
-    public String editFomr(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
-        log.info("blogMainForm()-userId= {}", userId);
-
-        userId = "U-329fd5e949254d0688aafd809c2e5d";
-
-        UserDto user = userService.getUser(userId);
-        List<CategoryDto> categoryList = categoryService.getCategoryList(userId);
-        System.out.println("categoryList = " + categoryList);
-
-        log.info("user= {}", user);
-        model.addAttribute("user", user);
-        model.addAttribute("categoryList", categoryList);
-
-
-        return "/view/blog/write";
-    }
-
     /* 카테고리 추가 */
-    @PostMapping("/api/blog/category")
+    @PostMapping("/category")
     public ResponseEntity<?> createCategory(@Valid @RequestBody RequestCreateCategoryDto params) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -99,7 +53,7 @@ public class BlogController {
     }
 
     /* 카테고리 삭제 */
-    @DeleteMapping("/api/blog/category/{categoryId}")
+    @DeleteMapping("/category/{categoryId}")
     public ResponseEntity<?> deleteCategory(@PathVariable("categoryId") String categoryId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -116,7 +70,7 @@ public class BlogController {
     }
 
     /* 카테고리 수정 */
-    @PatchMapping("/api/blog/category/{categoryId}")
+    @PatchMapping("/category/{categoryId}")
     public ResponseEntity<?> editCategoryName(@PathVariable("categoryId") String categoryId,
                                               @Valid @RequestBody RequestUpdateCategoryNameDto params) {
 
@@ -135,8 +89,8 @@ public class BlogController {
     }
 
     /* 포스트 작성 */
-    @PostMapping("/blog/post")
-    public String createPost(RequestCreatePostDto params) {
+    @PostMapping("/post")
+    public ResponseEntity<?> createPost(@Valid @RequestBody RequestCreatePostDto params) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
@@ -146,8 +100,6 @@ public class BlogController {
             params.setCategoryId(null);
 
         postService.createPost(userId, params);
-
-        return "redirect:/blog";
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
-
 }

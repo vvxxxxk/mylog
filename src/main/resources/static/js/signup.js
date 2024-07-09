@@ -17,7 +17,7 @@
     }
 
     if (isFlag) {
-      fetch("/api/check-email", {
+      fetch("/api/user/check-email", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'
@@ -44,7 +44,7 @@
   document.getElementById('sendAuthCodeButton').addEventListener('click', async function(event) {
     event.preventDefault();
     const email = document.getElementById('email').value;
-    fetch("/api/send-authcode", {
+    fetch("/api/user/send-authcode", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -86,7 +86,7 @@
       const email = document.getElementById('email').value;
       const authcode = document.getElementById('authcode').value;
 
-      fetch("/api/verify-authcode", {
+      fetch("/api/user/verify-authcode", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'
@@ -164,7 +164,7 @@
   <!-- 닉네임 중복확인 -->
   function checkNickname() {
     const nickname = document.getElementById('nickname').value;
-    fetch("/api/check-nickname", {
+    fetch("/api/user/check-nickname", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -187,21 +187,50 @@
     });
   }
 
-  <!-- 회원가입 폼 제출 전 검증 -->
+  <!-- 회원가입 -->
   document.getElementById('signupForm').addEventListener('submit', function(event) {
+    event.preventDefault();
     // 임시로 이메일 인증 없이 회원가입 가능
     isEmailVerified = true;
     if(!isEmailVerified) {
       alert('이메일 인증은 필수입니다.');
-      event.preventDefault();
+      //event.preventDefault();
     } else if (!isPasswordVerified) {
       document.getElementById('passwordFeedback').style.display = 'block';
       document.getElementById('password').classList.add('is-invalid');
       document.getElementById('confirmPasswordFeedback').style.display = 'block';
       document.getElementById('confirmPassword').classList.add('is-invalid');
-      event.preventDefault();
+      //event.preventDefault();
     } else if (!isNicknameChecked) {
       alert('닉네임 중복 확인은 필수입니다.');
-      event.preventDefault();
+      //event.preventDefault();
     }
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const username = document.getElementById('username').value;
+    const nickname = document.getElementById('nickname').value;
+
+    fetch("/api/user/signup", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email,
+                             password: password,
+                             username: username,
+                             nickname: nickname})
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status == true) {
+        window.location.href = `/`;
+      } else {
+        alert('회원가입 실패');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('서버와의 통신 중 오류가 발생했습니다.');
+    });
   });

@@ -4,7 +4,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    fetch('/api/login', {
+    fetch('/api/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
 document.getElementById('logoutButton').addEventListener('click', function(event) {
     event.preventDefault();
 
-    fetch('/api/logout', {
+    fetch('/api/auth/logout', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

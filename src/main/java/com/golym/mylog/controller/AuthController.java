@@ -20,13 +20,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -36,10 +34,8 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/api/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@Validated @RequestBody RequestLoginDto params, HttpSession session) {
-
-        System.out.println("AuthController.login");
         UserDetails userDetails = userDetailsService.loadUserByUsername(params.getEmail());
 
         try {
@@ -50,12 +46,11 @@ public class AuthController {
             session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
             return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
         } catch (AuthenticationException e) {
-            System.out.println("AuthController.login failed");
             return new ResponseEntity<>(new ResponseDto(ResponseType.FAIL), HttpStatus.OK);
         }
     }
 
-    @PostMapping("/api/logout")
+    @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -65,14 +60,11 @@ public class AuthController {
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 
-    @GetMapping("/api/check-session")
+    @GetMapping("/check-session")
     public ResponseEntity<?> checkSession() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName())) {
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName()))
             return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
-        }
-
         return new ResponseEntity<>(new ResponseDto(ResponseType.FAIL), HttpStatus.OK);
     }
 }

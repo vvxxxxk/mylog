@@ -16,25 +16,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@Controller
+@RestController
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/signup")
-    public String signupForm() {
-        return "/view/user/signup";
-    }
-
-    @PostMapping("/api/send-authcode")
+    @PostMapping("/send-authcode")
     public ResponseEntity<?> sendAuthcode(@Valid @RequestBody RequestSendAuthCodeDto params) {
         // 인증 메일 발송
         userService.sendAuthcode(params);
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 
-    @PostMapping("/api/verify-authcode")
+    @PostMapping("/verify-authcode")
     public ResponseEntity<?> verifyAuthcode(@Valid @RequestBody RequestVerifyAuthcodeDto params) {
 
         log.info("params = {}", params);
@@ -46,7 +42,7 @@ public class UserController {
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 
-    @PostMapping("/api/check-email")
+    @PostMapping("/check-email")
     public ResponseEntity<?> checkEmail(@Valid @RequestBody RequestCheckEmailDto params) {
         // 이메일 중복 확인
         boolean isExisted = userService.isExistEmail(params.getEmail());
@@ -56,7 +52,7 @@ public class UserController {
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 
-    @PostMapping("/api/check-nickname")
+    @PostMapping("/check-nickname")
     public ResponseEntity<?> checkNickname(@Valid @RequestBody RequestCheckNicknameDto params) {
         // 닉네임 중복 확인
         boolean isExisted = userService.isExistNickname(params.getNickname());
@@ -67,14 +63,12 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(@Valid @ModelAttribute RequestSignupDto params) {
-
+    public ResponseEntity<?> signup(@Valid @RequestBody RequestSignupDto params) {
         log.info("params: {}", params);
         if (userService.isExistEmail(params.getEmail()) || userService.isExistNickname(params.getNickname()))
             throw new ConflictException("The user already exists. Please check the email and nickname again.");
 
         userService.signup(params);
-        return "redirect:/";
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
-
 }

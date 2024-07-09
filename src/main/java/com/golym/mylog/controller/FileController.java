@@ -31,5 +31,4 @@ public class FileController {
                 .url(url)
                 .build(), HttpStatus.OK);
     }
-
 }
