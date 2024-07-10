@@ -12,40 +12,8 @@
     <button id="startButton" th:href="@{/main}">시작하기</button>
 </div>
 
-<!-- 로그인/회원가입 모달 -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">로그인 / 회원가입</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- 로그인/회원가입 폼 내용 -->
-                <form th:action="@{/login}" id="loginForm" method="post">
-                    <div class="form-group">
-                        <input type="email" class="form-control" id="email" name="email" placeholder="이메일을 입력하세요">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요">
-                    </div>
-                    <button type="submit" class="btn btn-primary">로그인</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <p>계정이 없으신가요? <a href="#" th:href="@{/signup}">회원가입</a></p>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- 공통 스크립트 -->
 <div th:replace="~{common/fragment/script :: common_script}"></div>
-<!-- index.js -->
-<!--<script src="js/index.js"></script>-->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("startButton").addEventListener("click", function() {

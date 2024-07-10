@@ -7,11 +7,6 @@
 <body>
 <th:block th:fragment="sidebar(bloger, categoryList)">
     <div class="sidebar">
-<!--        <div class="logo-section">-->
-<!--            <a class="logo-a" th:href="@{/main}">-->
-<!--                <img class="logo-img" src="/images/logo/text-icon-60x20.png" alt="mylog-text-logo">-->
-<!--            </a>-->
-<!--        </div>-->
         <div class="profile-section">
             <div class="profile-image" th:if="${bloger.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
             <div class="profile-image" th:unless="${bloger.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.jpg} + ');'"></div>
@@ -22,28 +17,11 @@
             <p class="category-title">전체보기</p>
             <ul class="category-list sidebar-category-list">
                 <li th:each="category : ${categoryList}" class="category-item">
-<!--                    <span class="category-toggle-icon">▶</span>-->
                     <a class="category-item-link" th:text="${category.name}"></a>
                 </li>
             </ul>
         </div>
     </div>
-
-    <script>
-        function toggleSubCategories(element) {
-            const subCategoryList = element.nextElementSibling;
-            const toggleIcon = element.previousElementSibling;
-            if (subCategoryList && subCategoryList.style) {
-                if (subCategoryList.style.display === "none" || subCategoryList.style.display === "") {
-                    subCategoryList.style.display = "block";
-                    toggleIcon.textContent = "▼";
-                } else {
-                    subCategoryList.style.display = "none";
-                    toggleIcon.textContent = "▶";
-                }
-            }
-        }
-    </script>
 </th:block>
 </body>
 </html>

@@ -48,95 +48,125 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 카테고리 추가
-            function addCategory(categoryId, name) {
-                const newItem = document.createElement("li");
-                newItem.className = "modal-category-item list-group-item d-flex justify-content-between align-items-center";
-                newItem.innerHTML = `
-                    <a class="category-item-link" data-id="${categoryId}">${name}</a>
-                    <span>
-                        <button class="btn btn-sm btn-warning edit-btn" data-id="${categoryId}">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-btn" data-id="${categoryId}">Delete</button>
-                    </span>
-                `;
-                document.querySelector(".modal-category-list").appendChild(newItem);
-                // 사이드바 업데이트
-                updateSidebarCategoryList(categoryId, name, 'add');
-            }
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 카테고리 추가
+        function addCategory(categoryId, name) {
+            const newItem = document.createElement("li");
+            newItem.className = "modal-category-item list-group-item d-flex justify-content-between align-items-center";
+            newItem.innerHTML = `
+                <a class="category-item-link" data-id="${categoryId}">${name}</a>
+                <span>
+                    <button class="btn btn-sm btn-warning edit-btn" data-id="${categoryId}">Edit</button>
+                    <button class="btn btn-sm btn-danger delete-btn" data-id="${categoryId}">Delete</button>
+                </span>
+            `;
+            document.querySelector(".modal-category-list").appendChild(newItem);
+            // 사이드바 업데이트
+            updateSidebarCategoryList(categoryId, name, 'add');
+        }
 
-            // 이벤트 위임을 사용하여 카테고리 선택 및 버튼 클릭 처리
-            function setupCategorySelection() {
-                document.querySelector(".modal-category-list").addEventListener('click', function(event) {
-                    const target = event.target;
+        // 이벤트 위임을 사용하여 카테고리 선택 및 버튼 클릭 처리
+        function setupCategorySelection() {
+            document.querySelector(".modal-category-list").addEventListener('click', function(event) {
+                const target = event.target;
 
-                    // 클릭된 요소가 edit-btn이나 delete-btn일 경우
-                    if (target.classList.contains('edit-btn')) {
-                        const item = target.closest('.modal-category-item');
-                        editCategory(item);
-                        return;
-                    }
+                // 클릭된 요소가 edit-btn이나 delete-btn일 경우
+                if (target.classList.contains('edit-btn')) {
+                    const item = target.closest('.modal-category-item');
+                    editCategory(item);
+                    return;
+                }
 
-                    if (target.classList.contains('delete-btn')) {
-                        const item = target.closest('.modal-category-item');
-                        deleteCategory(item);
-                        return;
-                    }
+                if (target.classList.contains('delete-btn')) {
+                    const item = target.closest('.modal-category-item');
+                    deleteCategory(item);
+                    return;
+                }
 
-                    // 카테고리 항목이 클릭되었는지 확인
-                    const categoryItem = target.closest('.modal-category-item');
-                    if (categoryItem) {
-                        const selectedCategoryId = categoryItem.querySelector('.category-item-link').getAttribute('data-id');
-                        const selectedCategoryName = categoryItem.querySelector('.category-item-link').innerText;
-                        document.getElementById('selectedCategoryDisplay').innerText = selectedCategoryName;
-                        document.getElementById('categoryId').value = selectedCategoryId;
-                        $('#categoryModal').modal('hide'); // 모달 닫기
-                    }
-                });
-            }
-
-            // 페이지 로드 시 setupCategorySelection 함수 호출
-            setupCategorySelection();
-
-            // 카테고리 추가 API
-            document.getElementById("addCategoryForm").addEventListener("submit", function(event) {
-                event.preventDefault();
-                const categoryName = document.getElementById("categoryName").value;
-
-                if (categoryName) {
-                    fetch('/api/blog/category', {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ name: categoryName })
-                    })
-                    .then(response => {
-                        if(!response.ok) {
-                            return response.json().then(error => {
-                                throw new Error(error.message);
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        addCategory(data.category.categoryId, data.category.name);
-                        document.getElementById("categoryName").value = "";
-                    })
-                    .catch(error => {
-                        console.error("There was a problem with the fetch operation:", error);
-                        alert("Error: " + error.message);
-                    });
+                // 카테고리 항목이 클릭되었는지 확인
+                const categoryItem = target.closest('.modal-category-item');
+                if (categoryItem) {
+                    const selectedCategoryId = categoryItem.querySelector('.category-item-link').getAttribute('data-id');
+                    const selectedCategoryName = categoryItem.querySelector('.category-item-link').innerText;
+                    document.getElementById('selectedCategoryDisplay').innerText = selectedCategoryName;
+                    document.getElementById('categoryId').value = selectedCategoryId;
+                    $('#categoryModal').modal('hide'); // 모달 닫기
                 }
             });
+        }
 
-            // 카테고리 삭제 API
-            function deleteCategory(categoryItem) {
-                const categoryId = categoryItem.querySelector('.delete-btn').getAttribute('data-id');
+        // 페이지 로드 시 setupCategorySelection 함수 호출
+        setupCategorySelection();
 
+        // 카테고리 추가 API
+        document.getElementById("addCategoryForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const categoryName = document.getElementById("categoryName").value;
+
+            if (categoryName) {
+                fetch('/api/blog/category', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name: categoryName })
+                })
+                .then(response => {
+                    if(!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(error.message);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    addCategory(data.category.categoryId, data.category.name);
+                    document.getElementById("categoryName").value = "";
+                })
+                .catch(error => {
+                    console.error("There was a problem with the fetch operation:", error);
+                    alert("Error: " + error.message);
+                });
+            }
+        });
+
+        // 카테고리 삭제 API
+        function deleteCategory(categoryItem) {
+            const categoryId = categoryItem.querySelector('.delete-btn').getAttribute('data-id');
+
+            fetch(`/api/blog/category/${categoryId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        throw new Error(error.message);
+                    });
+                }
+                // Remove the category item from the list
+                categoryItem.remove();
+                updateSidebarCategoryList(categoryId, null, 'delete');
+            })
+            .catch(error => {
+                console.error('There was a problem with the delete operation:', error);
+                alert('Error: ' + error.message);
+            });
+        }
+
+        // 카테고리 수정 API
+        function editCategory(categoryItem) {
+            const categoryId = categoryItem.querySelector('.edit-btn').getAttribute('data-id');
+            const currentName = categoryItem.querySelector('.category-item-link').innerText;
+            const newName = prompt('Enter new category name:', currentName);
+
+            if (newName && newName !== currentName) {
                 fetch(`/api/blog/category/${categoryId}`, {
-                    method: 'DELETE'
+                    method: 'PATCH',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name: newName })
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -144,74 +174,44 @@
                             throw new Error(error.message);
                         });
                     }
-                    // Remove the category item from the list
-                    categoryItem.remove();
-                    updateSidebarCategoryList(categoryId, null, 'delete');
+                    return response.json();
+                })
+                .then(data => {
+                    categoryItem.querySelector('.category-item-link').innerText = newName;
+                    updateSidebarCategoryList(categoryId, newName, 'edit');
                 })
                 .catch(error => {
-                    console.error('There was a problem with the delete operation:', error);
+                    console.error('There was a problem with the edit operation:', error);
                     alert('Error: ' + error.message);
                 });
             }
+        }
+    });
 
-            // 카테고리 수정 API
-            function editCategory(categoryItem) {
-                const categoryId = categoryItem.querySelector('.edit-btn').getAttribute('data-id');
-                const currentName = categoryItem.querySelector('.category-item-link').innerText;
-                const newName = prompt('Enter new category name:', currentName);
+    function updateSidebarCategoryList(categoryId, categoryName, action) {
+        const sidebarCategoryList = document.querySelector('.sidebar-category-list');
 
-                if (newName && newName !== currentName) {
-                    fetch(`/api/blog/category/${categoryId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ name: newName })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(error => {
-                                throw new Error(error.message);
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        categoryItem.querySelector('.category-item-link').innerText = newName;
-                        updateSidebarCategoryList(categoryId, newName, 'edit');
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the edit operation:', error);
-                        alert('Error: ' + error.message);
-                    });
-                }
+        if (action === 'add') {
+            const newItem = document.createElement("li");
+            newItem.className = "category-item";
+            newItem.innerHTML = `
+                <span class="category-toggle-icon">▶</span>
+                <a class="category-item-link" data-id="${categoryId}">${categoryName}</a>
+            `;
+            sidebarCategoryList.appendChild(newItem);
+        } else if (action === 'edit') {
+            const itemToEdit = sidebarCategoryList.querySelector(`.category-item-link[data-id='${categoryId}']`);
+            if (itemToEdit) {
+                itemToEdit.textContent = categoryName;
             }
-        });
-
-        function updateSidebarCategoryList(categoryId, categoryName, action) {
-            const sidebarCategoryList = document.querySelector('.sidebar-category-list');
-
-            if (action === 'add') {
-                const newItem = document.createElement("li");
-                newItem.className = "category-item";
-                newItem.innerHTML = `
-                    <span class="category-toggle-icon">▶</span>
-                    <a class="category-item-link" data-id="${categoryId}">${categoryName}</a>
-                `;
-                sidebarCategoryList.appendChild(newItem);
-            } else if (action === 'edit') {
-                const itemToEdit = sidebarCategoryList.querySelector(`.category-item-link[data-id='${categoryId}']`);
-                if (itemToEdit) {
-                    itemToEdit.textContent = categoryName;
-                }
-            } else if (action === 'delete') {
-                const itemToDelete = sidebarCategoryList.querySelector(`.category-item-link[data-id='${categoryId}']`);
-                if (itemToDelete) {
-                    itemToDelete.closest('.category-item').remove();
-                }
+        } else if (action === 'delete') {
+            const itemToDelete = sidebarCategoryList.querySelector(`.category-item-link[data-id='${categoryId}']`);
+            if (itemToDelete) {
+                itemToDelete.closest('.category-item').remove();
             }
         }
-    </script>
+    }
+</script>
 </th:block>
 </body>
 </html>

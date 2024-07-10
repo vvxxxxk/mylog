@@ -7,7 +7,6 @@
     <link rel="stylesheet" th:href="@{/css/header.css}">
 </head>
 <body>
-
 <div class="blog-container">
     <!-- 사이드 바 영역 -->
     <div class="sidebar" th:replace="~{common/fragment/sidebar :: sidebar(${user}, ${categoryList})}"></div>
@@ -22,14 +21,10 @@
 
         <!-- 컨텐츠 영역 -->
         <div class="content">
-            <!-- ToDo. 글 쓰기 버튼 -->
             <div class="row">
                 <div class="col-md-1"></div>
                 <div class="col-md-9"></div>
                 <div class="col-md-1">
-<!--                    <a class="new-post-icon" th:href="@{/blog/write}">-->
-<!--                        <i class="bi bi-pencil-square"></i>-->
-<!--                    </a>-->
                 </div>
                 <div class="col-md-1"></div>
             </div>
@@ -44,8 +39,6 @@
                 <div class="col-md-1"></div>
                 <div class="col-md-10">
                     <form class="edit-form" method="post" th:action="@{/api/blog/post}" th:object="${postDto}" id="post-write-form">
-
-
                         <!-- 제목 -->
                         <div class="form-group">
                             <input class="form-control" type="text" id="title" name="title" placeholder="글 제목을 입력해주세요." max="255" required>
@@ -68,7 +61,6 @@
                         <div class="form-group text-right">
                             <button type="submit" class="btn btn-success">작성하기</button>
                         </div>
-
                     </form>
 
                     <!-- 빈 영역 -->
@@ -80,16 +72,13 @@
         </div>
     </div>
 </div>
-
 <!-- 카테고리 관리 모달창 -->
 <div class="categoryModal" th:replace="~{common/fragment/categoryModal :: categoryModal(${categoryList})}"></div>
-
 
 <!-- 공통 스크립트 -->
 <div th:replace="~{common/fragment/script :: common_script}"></div>
 <!-- toast ui 스크립트-->
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-
 <script th:inline="javascript"  >
     /*<![CDATA[*/
     const userId = /*[[${user.userId}]]*/ '';
@@ -222,8 +211,6 @@
             });
         });
     });
-
 </script>
-
 </body>
 </html>
