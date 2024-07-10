@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PostDto {
 
-    private static final int SYMMARY_LENGTH = 200;  // summary 필드 요약 길이
+    private static final int SYMMARY_LENGTH = 300;  // summary 필드 요약 길이
 
     private String postId;
     private String userId;

@@ -8,6 +8,7 @@ import com.golym.mylog.model.dto.common.PostDto;
 import com.golym.mylog.model.dto.request.RequestCreateCategoryDto;
 import com.golym.mylog.model.dto.request.RequestCreatePostDto;
 import com.golym.mylog.model.dto.request.RequestUpdateCategoryNameDto;
+import com.golym.mylog.model.dto.request.RequestUpdatePostDto;
 import com.golym.mylog.model.dto.response.ResponseCreateCategoryDto;
 import com.golym.mylog.model.dto.response.ResponseDto;
 import com.golym.mylog.model.dto.response.ResponseGetPostsDto;
@@ -85,8 +86,6 @@ public class BlogController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
-        System.out.println("categoryId = " + categoryId);
-
         // 요청한 유저의 카테고리가 맞는지 체크
         if (!categoryService.isExistsCategoryByCategoryIdAndUserId(categoryId, userId))
             throw new BadRequestException("Invalid edit category.");
@@ -111,7 +110,7 @@ public class BlogController {
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 
-    /** 포스트 조회 **/
+    /** 포스트 목록 조회 */
     @GetMapping("/post")
     public ResponseEntity<?> getPosts(@RequestParam(value = "userId", required = false) String userId,
                                       @RequestParam(value = "categoryId", required = false) String categoryId,
@@ -129,5 +128,41 @@ public class BlogController {
                 .postList(postList)
                 .build(),
                 HttpStatus.OK);
+    }
+
+    /** 포스트 삭제 */
+    @DeleteMapping("/post/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable("postId") String postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        // 요청한 유저의 게시글이 맞는지 체크
+        if (!postService.isExistsPostByPostAndUserId(postId, userId))
+            throw new BadRequestException("Invalid delete post.");
+
+        postService.deletePost(postId);
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
+
+    /**
+     * 포스트 수정
+     */
+    @PatchMapping("/post/{postId}")
+    public ResponseEntity<?> updatePost(@PathVariable("postId") String postId,
+                                        @RequestBody RequestUpdatePostDto params) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        // 요청한 유저의 게시글이 맞는지 체크
+        if (!postService.isExistsPostByPostAndUserId(postId, userId))
+            throw new BadRequestException("Invalid delete post.");
+
+        // 카테고리가 비어있을 경우 null
+        if (params.getCategoryId().isEmpty())
+            params.setCategoryId(null);
+
+        postService.updatePost(postId, params.getTitle(), params.getContent(), params.getCategoryId());
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -130,9 +131,9 @@ public class ViewController {
         return "/view/blog/blog";
     }
 
-    /** 글작성 페이지 **/
+    /** 게시글 작성 페이지 **/
     @GetMapping("/blog/{userId}/write")
-    public String editFomr(Model model) {
+    public String writeForm(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
@@ -143,5 +144,25 @@ public class ViewController {
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("totalPostCount", totalPostCount);
         return "/view/blog/write";
+    }
+
+    /**
+     * 게시글 수정 페이지
+     */
+    @GetMapping("/blog/edit/{postId}")
+    public String editForm(Model model,
+                           @PathVariable("postId") String postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        UserDto user = userService.getUser(userId);
+        PostDto post = postService.getPost(postId);
+        List<CategoryDto> categoryList = categoryService.getCategoryList(userId);
+        int totalPostCount = postService.getTotalPostCountByUserId(userId);
+        model.addAttribute("user", user);
+        model.addAttribute("post", post);
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("totalPostCount", totalPostCount);
+        return "/view/blog/edit";
     }
 }

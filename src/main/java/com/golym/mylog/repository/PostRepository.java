@@ -15,5 +15,6 @@ public interface PostRepository extends JpaRepository<PostEntity, String> {
     Page<PostEntity> findAllByUser_UserIdAndCategory_CategoryIdAndIsActive(String userId, String categoryId, boolean b, Pageable pageable);
     Optional<PostEntity> findByPostIdAndIsActive(String postId, boolean isActive);
     int countByUser_UserIdAndIsActive(String userId, boolean isActive);
+    boolean existsByPostIdAndUser_UserId(String postId, String userId);
 
 }

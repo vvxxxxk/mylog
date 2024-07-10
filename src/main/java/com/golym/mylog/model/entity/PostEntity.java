@@ -68,4 +68,14 @@ public class PostEntity {
     public void setCategory(CategoryEntity category) {
         this.category = category;
     }
+
+    public void deletePost() {
+        this.isActive = false;
+    }
+
+    public void updatePost(String title, String content, CategoryEntity category) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+    }
 }

@@ -13,7 +13,7 @@
         <div class="header" th:replace="~{common/fragment/header :: header(${user})}"></div>
 
         <!-- 빈 영역 -->
-        <div class="none-area"></div>
+        <div class="none-area" style="height:10%;"></div>
 
         <!-- 컨텐츠 영역 -->
         <div class="content">
@@ -22,8 +22,9 @@
                 <div class="col-md-3"></div>
                 <div class="col-md-6">
                     <h1 class="content-title" th:text="${post.title}"></h1>
+                    <div class="none-area" style="height:2%;"></div>
                     <p class="text-muted">
-                        <small><a th:href="@{/blog/{userId}(userId=${bloger.userId})}" style="text-decoration: none;">작성자 Mylog</a></small>
+                        <small><a th:href="@{/blog/{userId}(userId=${bloger.userId})}" th:text="${post.writer} + '`s Mylog'" style="text-decoration: none;">Mylog</a></small>
                         <span class="mx-2">|</span>
                         <small th:text="'Writer: ' + ${post.writer}">Writer: user</small>
                         <span class="mx-2">|</span>
@@ -34,6 +35,13 @@
                         <small th:text="'조회수: ' + ${post.viewCount}">조회수: 10</small>
                         <span class="mx-2">|</span>
                         <small th:text="'댓글: ' + ${post.commentCount}">댓글: 10</small>
+                        <!-- 수정 및 삭제 링크 (작성자와 현재 사용자가 동일할 때만 표시) -->
+                        <span th:if="${user != null and user.userId == bloger.userId}">
+                            <span class="mx-2">|</span>
+                            <small><a th:href="@{/blog/edit/{postId}(postId=${post.postId})}" id="postUpdateButton">수정</a></small>
+                            <span class="mx-2">|</span>
+                            <small><a href="#" class="postDeleteButton" th:attr="data-id=${post.postId}">삭제</a></small>
+                        </span>
                     </p>
                     <hr>
                 </div>
@@ -55,13 +63,14 @@
 <div th:replace="~{common/fragment/script :: common_script}"></div>
 <!-- toast ui 스크립트-->
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script th:inline="javascript"  >
+    /*<![CDATA[*/
+    const userId = /*[[${user.userId != null ? user.userId : ''}]]*/ '';
+    /*]]>*/
+</script>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    // 서버에서 전달된 content를 JavaScript 변수로 변환
     const content = /*[[${post.content}]]*/ '';
-
-    // 데이터 출력 확인
-    console.log("Content from server:", content);
 
     // TOAST UI Viewer 초기화
     const viewer = new toastui.Editor.factory({
@@ -69,6 +78,32 @@
         initialValue: content,
         viewer: true,
         height: '600px'
+    });
+
+    document.querySelectorAll('.postDeleteButton').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const postId = button.getAttribute('data-id');
+            if (confirm("정말로 이 게시물을 삭제하시겠습니까?")) {
+                fetch(`/api/blog/post/${postId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === true) {
+                        window.location.href = `/blog/${userId}`;
+                    } else {
+                        alert("게시물을 삭제하는데 실패했습니다.");
+                    }
+                })
+                .catch(error => console.error("There was a problem with the fetch operation:", error));
+            }
+        });
     });
 
     /*]]>*/
