@@ -56,11 +56,16 @@ public class ViewController {
     @GetMapping("/main")
     public String blogMainForm(Model model,
                                @PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        UserDto user = new UserDto();
+        if (!userId.equals("anonymousUser"))
+            user = userService.getUser(userId);
+
         List<PostDto> postList = postService.getPostList(pageable);
+        model.addAttribute("user", user);
         model.addAttribute("postList", postList);
-        for (PostDto postDto : postList) {
-            System.out.println("postDto.getSummary() = " + postDto.getSummary());
-        }
         return "/view/blog/main";
     }
 
@@ -72,33 +77,49 @@ public class ViewController {
                            @PathVariable("postId") String postId,
                            @PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        UserDto user = new UserDto();
+        if (!userId.equals("anonymousUser"))
+            user = userService.getUser(userId);
+
         PostDto post = postService.getPost(postId);
         List<CommentDto> commentList = commentService.getComment(postId, pageable);
 
+        model.addAttribute("user", user);
         model.addAttribute("post", post);
         model.addAttribute("commentList", commentList);
-
-        System.out.println("post = " + post);
 
         return "/view/blog/post";
     }
 
-    /** 블로그 페이지 **/
-    @GetMapping("/blog")
-    public String blogForm(Model model) {
+    /** Mylog 페이지 **/
+    @GetMapping("/blog/{userId}")
+    public String blogForm(Model model,
+                           @PathVariable("userId") String blogerId,
+                           @PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
-        UserDto user = userService.getUser(userId);
-        List<CategoryDto> categoryList = categoryService.getCategoryList(userId);
+        UserDto user = new UserDto();
+        if (!userId.equals("anonymousUser"))
+            user = userService.getUser(userId);
+
+        //UserDto user = userService.getUser(userId);
+        UserDto bloger = userService.getUser(blogerId);
+        List<CategoryDto> categoryList = categoryService.getCategoryList(blogerId);
+        List<PostDto> postList = postService.getPostListByUserId(blogerId, pageable);
         model.addAttribute("user", user);
+        model.addAttribute("bloger", bloger);
         model.addAttribute("categoryList", categoryList);
+        model.addAttribute("postList", postList);
         return "/view/blog/blog";
     }
 
     /** 글작성 페이지 **/
-    @GetMapping("/blog/write")
+    @GetMapping("/blog/{userId}/write")
     public String editFomr(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();

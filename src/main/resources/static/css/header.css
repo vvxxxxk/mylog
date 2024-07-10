@@ -7,6 +7,7 @@
     display: flex;
     align-items: center;
     gap: 20px; /* 아이콘과 입력 필드 사이의 간격을 설정 */
+    position: relative;
 }
 
 .form-inline .form-control {
@@ -29,4 +30,36 @@
 
 .bi-box-arrow-in-right {
     margin-right: 10px;
+}
+
+.settings-icon {
+    cursor: pointer;
+    font-size: 24px;
+    margin-left: 10px;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 36px;
+    right: 0;
+    transform: translateX(-80%);
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    z-index: 1;
+    width: 100px;
+    padding: 8px 0;
+}
+.dropdown-menu.show {
+    display: block;
+}
+.dropdown-menu a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: black;
+    white-space: nowrap;
+}
+.dropdown-menu a:hover {
+    background-color: #f1f1f1;
 }

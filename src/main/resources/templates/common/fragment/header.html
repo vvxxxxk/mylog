@@ -12,16 +12,23 @@
             <form class="form-inline my-2 my-lg-0">
                 <input class="form-control mr-sm-1" type="search" placeholder="Search" aria-label="Search" style="height: 36px">
             </form>
-<!--            <i class="bi bi-gear settings-icon"></i>-->
-            <!-- 로그인 버튼 -->
-            <button class="btn btn-outline-primary" data-toggle="modal" data-target="#loginModal" style="height: 36px">Login</button>
+            <button class="btn btn-outline-primary" data-toggle="modal" data-target="#loginModal" style="height: 36px">로그인</button>
         </div>
         <div th:if="${#authentication.name != 'anonymousUser'}" class="header-right">
             <form class="form-inline my-2 my-lg-0">
                 <input class="form-control mr-sm-1" type="search" placeholder="Search" aria-label="Search" style="height: 36px">
             </form>
-            <i class="bi bi-gear settings-icon"></i>
-            <button  type="submit" class="btn btn-outline-danger" id="logoutButton" style="height: 36px">Logout</button>
+<!--            <button type="submit" class="btn btn-outline-danger" id="logoutButton" style="height: 36px">로그아웃</button>-->
+            <div style="position: relative;">
+                <i class="bi bi-gear settings-icon"></i>
+                <div class="dropdown-menu">
+                    <a th:href="@{/main}">Home</a>
+                    <a th:href="@{/blog/{userId}(userId=${user.userId})}">Mylog</a>
+                    <a th:href="@{/blog/{userId}/write(userId=${user.userId})}">새 글쓰기</a>
+                    <a id="logoutButton">로그아웃</a>
+                    <a href="#">설정</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -38,6 +45,7 @@
                 <div class="modal-body">
                     <!-- 로그인/회원가입 폼 내용 -->
                     <form th:action="@{/login}" id="loginForm" method="post">
+                        <input type="hidden" id="redirectUrl" name="redirectUrl">
                         <div class="form-group">
                             <input type="email" class="form-control" id="email" name="email" placeholder="이메일을 입력하세요">
                         </div>
@@ -54,6 +62,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const settingsIcon = document.querySelector('.settings-icon');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+
+            settingsIcon.addEventListener('click', function () {
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // 메뉴 외부 클릭시 메뉴 닫기
+            document.addEventListener('click', function (event) {
+                if (!settingsIcon.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+        });
+    </script>
 </th:block>
 </body>
 </html>

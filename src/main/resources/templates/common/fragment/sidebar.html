@@ -5,24 +5,24 @@
     <title>Sidebar</title>
 </head>
 <body>
-<th:block th:fragment="sidebar(user, categoryList)">
+<th:block th:fragment="sidebar(bloger, categoryList)">
     <div class="sidebar">
 <!--        <div class="logo-section">-->
-<!--            <a class="logo-a" th:href="@{/blog}">-->
+<!--            <a class="logo-a" th:href="@{/main}">-->
 <!--                <img class="logo-img" src="/images/logo/text-icon-60x20.png" alt="mylog-text-logo">-->
 <!--            </a>-->
 <!--        </div>-->
         <div class="profile-section">
-            <div class="profile-image" th:if="${user.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
-            <div class="profile-image" th:unless="${user.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.jpg} + ');'"></div>
-            <p class="profile-nickname" th:text="${user.nickname}">닉네임</p>
+            <div class="profile-image" th:if="${bloger.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
+            <div class="profile-image" th:unless="${bloger.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.jpg} + ');'"></div>
+            <p class="profile-nickname" th:text="${bloger.nickname}">닉네임</p>
         </div>
         <div class="line-section"><hr></div>
         <div class="category-section">
             <p class="category-title">전체보기</p>
             <ul class="category-list sidebar-category-list">
                 <li th:each="category : ${categoryList}" class="category-item">
-                    <span class="category-toggle-icon">▶</span>
+<!--                    <span class="category-toggle-icon">▶</span>-->
                     <a class="category-item-link" th:text="${category.name}"></a>
                 </li>
             </ul>

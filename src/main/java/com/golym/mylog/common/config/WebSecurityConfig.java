@@ -39,7 +39,7 @@ public class WebSecurityConfig {
             "/signup",
             "/main",
             // ################## TEST #####################
-            "/blog",
+            "/blog/{userId}",
             "/blog/write",
             "/api/file/image",
             // #############################################

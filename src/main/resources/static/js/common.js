@@ -3,6 +3,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const redirectUrl = window.location.href;
 
     fetch('/api/auth/login', {
         method: 'POST',
@@ -20,7 +21,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     })
     .then(message => {
         //alert(message);
-        window.location.href = `/main`;
+        window.location.href = redirectUrl;
     })
     .catch((error) => {
         console.error('Error:', error);

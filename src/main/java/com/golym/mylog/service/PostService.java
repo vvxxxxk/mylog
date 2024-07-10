@@ -47,7 +47,6 @@ public class PostService {
 
     public List<PostDto> getPostList(Pageable pageable) {
         Page<PostEntity> pagingPostEntityList = postRepository.findAllByIsActive(true, pageable);
-
         return pagingPostEntityList.stream()
                 .map(PostDto::new)
                 .collect(Collectors.toList());
@@ -58,5 +57,12 @@ public class PostService {
                 .orElseThrow(() -> new BadRequestException("Not Found Post. postId=" + postId));
 
         return new PostDto(postEntity);
+    }
+
+    public List<PostDto> getPostListByUserId(String userId, Pageable pageable) {
+        Page<PostEntity> pagingPostEntityList = postRepository.findAllByUser_UserIdAndIsActive(userId, true, pageable);
+        return pagingPostEntityList.stream()
+                .map(PostDto::new)
+                .collect(Collectors.toList());
     }
 }

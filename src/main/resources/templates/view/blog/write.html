@@ -27,9 +27,9 @@
                 <div class="col-md-1"></div>
                 <div class="col-md-9"></div>
                 <div class="col-md-1">
-                    <a class="new-post-icon" th:href="@{/blog/write}">
-                        <i class="bi bi-pencil-square"></i>
-                    </a>
+<!--                    <a class="new-post-icon" th:href="@{/blog/write}">-->
+<!--                        <i class="bi bi-pencil-square"></i>-->
+<!--                    </a>-->
                 </div>
                 <div class="col-md-1"></div>
             </div>
@@ -90,7 +90,11 @@
 <!-- toast ui 스크립트-->
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
-
+<script th:inline="javascript"  >
+    /*<![CDATA[*/
+    const userId = /*[[${user.userId}]]*/ '';
+    /*]]>*/
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         toastui.Editor.setLanguage(['ko', 'ko-KR'], {
@@ -207,7 +211,7 @@
             .then(response => response.json())
             .then(data => {
               if (data.status == true) {
-                window.location.href = `/blog`;
+                    window.location.href = `/blog/${userId}`;
               } else {
                 alert('글 작성이 실패하였습니다.');
               }

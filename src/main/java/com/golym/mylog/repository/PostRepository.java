@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, String> {
     Page<PostEntity> findAllByIsActive(boolean isActive, Pageable pageable);
+    Page<PostEntity> findAllByUser_UserIdAndIsActive(String userId, boolean isActive, Pageable pageable);
     Optional<PostEntity> findByPostIdAndIsActive(String postId, boolean isActive);
 }

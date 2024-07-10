@@ -10,7 +10,7 @@
 
 <div class="blog-container">
     <!-- 사이드 바 영역 -->
-    <div class="sidebar" th:replace="~{common/fragment/sidebar :: sidebar(${user}, ${categoryList})}"></div>
+    <div class="sidebar" th:replace="~{common/fragment/sidebar :: sidebar(${bloger}, ${categoryList})}"></div>
 
 
     <!-- 메인 콘텐츠 영역 -->
@@ -28,9 +28,10 @@
                 <div class="col-md-2"></div>
                 <div class="col-md-7"></div>
                 <div class="col-md-1">
-                    <a class="new-post-icon" th:href="@{/blog/write}">
-                        <i class="bi bi-pencil-square"></i>
-                    </a>
+                    <!-- <a class="new-post-icon" th:href="@{/blog/write}">-->
+<!--                    <a class="new-post-icon">-->
+<!--                        <i class="bi bi-pencil-square"></i>-->
+<!--                    </a>-->
                 </div>
                 <div class="col-md-2"></div>
             </div>
@@ -44,68 +45,24 @@
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
-                    <div class="post-list">
-                        <div class="post-item mb-4 p-3 border rounded">
-                            <h3 class="post-title">My First Blog Post</h3>
-                            <p class="post-content">This is the content of my first blog post. It contains some interesting information about the topic of my blog. I hope you find it useful and engaging!</p>
-                            <p class="text-muted">
-                                <small>Category: General</small>
-                                <span class="mx-2">|</span>
-                                <small>2024-07-06 10:00</small>
-                                <span class="mx-2">|</span>
-                                <small>조회수: 10</small>
-                            </p>
+                    <div class="post-list" id="post-list">
+                        <div th:each="post : ${postList}" class="post-item mb-4 p-3 border rounded">
+                            <a th:href="@{/blog/post/{postId}(postId=${post.postId})}" class="post-item-link">
+                                <h3 class="post-title" th:text="${post.title}">My First Blog Post</h3>
+                                <p class="post-content" th:text="${post.summary}">This is the content of my first blog post. It contains some interesting information about the topic of my blog. I hope you find it useful and engaging!</p>
+                                <p class="text-muted">
+                                    <small th:text="'Writer: ' + ${post.writer}">Writer: user</small>
+                                    <span class="mx-2">|</span>
+                                    <small th:text="'Category: ' + ${post.category}">Category: General</small>
+                                    <span class="mx-2">|</span>
+                                    <small th:text="${post.createAt}">2024-07-06 10:00</small>
+                                    <span class="mx-2">|</span>
+                                    <small th:text="'조회수: ' + ${post.viewCount}">조회수: 10</small>
+                                    <span class="mx-2">|</span>
+                                    <small th:text="'댓글: ' + ${post.commentCount}">조회수: 10</small>
+                                </p>
+                            </a>
                         </div>
-                        <div class="post-item mb-4 p-3 border rounded">
-                            <h3 class="post-title">My First Blog Post</h3>
-                            <p class="post-content">This is the content of my first blog post. It contains some interesting information about the topic of my blog. I hope you find it useful and engaging!</p>
-                            <p class="text-muted">
-                                <small>Category: General</small>
-                                <span class="mx-2">|</span>
-                                <small>2024-07-06 10:00</small>
-                                <span class="mx-2">|</span>
-                                <small>조회수: 10</small>
-                            </p>
-                        </div>
-                        <div class="post-item mb-4 p-3 border rounded">
-                            <h3 class="post-title">My First Blog Post</h3>
-                            <p class="post-content">This is the content of my first blog post. It contains some interesting information about the topic of my blog. I hope you find it useful and engaging!</p>
-                            <p class="text-muted">
-                                <small>Category: General</small>
-                                <span class="mx-2">|</span>
-                                <small>2024-07-06 10:00</small>
-                                <span class="mx-2">|</span>
-                                <small>조회수: 10</small>
-                            </p>
-                        </div>
-                        <div class="post-item mb-4 p-3 border rounded">
-                            <h3 class="post-title">My First Blog Post</h3>
-                            <p class="post-content">This is the content of my first blog post. It contains some interesting information about the topic of my blog. I hope you find it useful and engaging!</p>
-                            <p class="text-muted">
-                                <small>Category: General</small>
-                                <span class="mx-2">|</span>
-                                <small>2024-07-06 10:00</small>
-                                <span class="mx-2">|</span>
-                                <small>조회수: 10</small>
-                            </p>
-                        </div>
-                        <div class="post-item mb-4 p-3 border rounded">
-                            <h3 class="post-title">My First Blog Post</h3>
-                            <p class="post-content">This is the content of my first blog post. It contains some interesting information about the topic of my blog. I hope you find it useful and engaging!</p>
-                            <p class="text-muted">
-                                <small>Category: General</small>
-                                <span class="mx-2">|</span>
-                                <small>2024-07-06 10:00</small>
-                                <span class="mx-2">|</span>
-                                <small>조회수: 10</small>
-                            </p>
-                        </div>
-                        <!-- 페이징 버튼 -->
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-center" id="pagination">
-                                <!-- 페이징 버튼이 여기에 추가됩니다. -->
-                            </ul>
-                        </nav>
                     </div>
                 </div>
                 <div class="col-md-2"></div>
@@ -115,5 +72,59 @@
 </div>
 <!-- 공통 스크립트 -->
 <div th:replace="~{common/fragment/script :: common_script}"></div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log("DOM fully loaded and parsed");
+        let currentPage = 0;
+        const pageSize = 5; // 페이지 당 항목 수
+        const postListElement = document.getElementById("post-list");
+
+        function loadMorePosts() {
+            console.log("Loading more posts...");
+            currentPage++;
+            fetch(`/api/blog/post?page=${currentPage}&size=${pageSize}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data); // Debugging
+                    data.postList.forEach(post => {
+                        const postItem = document.createElement("div");
+                        postItem.className = "post-item mb-4 p-3 border rounded";
+                        postItem.innerHTML = `
+                            <a href="/blog/post/${post.postId}" class="post-item-link">
+                                <h3 class="post-title">${post.title}</h3>
+                                <p class="post-content">${post.summary}</p>
+                                <p class="text-muted">
+                                    <small>Writer: ${post.writer}</small>
+                                    <span class="mx-2">|</span>
+                                    <small>Category: ${post.category}</small>
+                                    <span class="mx-2">|</span>
+                                    <small>${post.createAt}</small>
+                                    <span class="mx-2">|</span>
+                                    <small>조회수: ${post.viewCount}</small>
+                                    <span class="mx-2">|</span>
+                                    <small>댓글: ${post.commentCount}</small>
+                                </p>
+                            </a>
+                        `;
+                        postListElement.appendChild(postItem);
+                    });
+                })
+                .catch(error => console.error("There was a problem with the fetch operation:", error));
+        }
+
+        window.addEventListener("scroll", () => {
+            console.log("Scrolled");
+            if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+                console.log("Bottom of page reached");
+                loadMorePosts();
+            }
+        });
+    });
+</script>
 </body>
 </html>
