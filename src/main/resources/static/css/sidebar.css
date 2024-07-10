@@ -11,19 +11,21 @@
 }
 
 .profile-image {
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     background-size: cover;
     background-position: center;
     margin: 0 auto;
     display: block;
+    border: 0.3px solid #ccc;
 }
 
 .profile-nickname {
-    color: #495057;
-    font-size: 1.5em;
-    font-weight: bold;
+    /*font-family: Courier New, sans-serif;*/
+    color: #6C6C6C;
+    font-size: 1.3em;
+    font-weight: 400;
     margin-top: 20px; /* 닉네임 상단 여백 */
     margin-bottom: 5px; /* 닉네임 하단 여백 */
 }
@@ -41,8 +43,8 @@
 
 .category-title {
     color: black;
-    font-size: 1.0em;
-    font-weight: bold;
+    font-size: 1.1em;
+    font-weight: 600;
 }
 
 .category-list {
@@ -58,7 +60,7 @@
 
 .category-item {
     list-style: none;
-    margin-top: 6px;
+    margin-top: 7px;
 }
 
 .category-item:hover {
@@ -72,4 +74,9 @@
 
 .category-toggle-icon {
     margin-right: 5px;
+}
+
+.selected-category {
+    font-weight: bold;
+    color: #0061b7; /* 원하는 강조 스타일로 변경 */
 }

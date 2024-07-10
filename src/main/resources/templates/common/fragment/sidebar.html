@@ -5,22 +5,32 @@
     <title>Sidebar</title>
 </head>
 <body>
-<th:block th:fragment="sidebar(bloger, categoryList)">
+<th:block th:fragment="sidebar(bloger, categoryList, totalPostCount, selectCategoryId)">
     <div class="sidebar">
         <div class="profile-section">
-            <div class="profile-image" th:if="${bloger.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
-            <div class="profile-image" th:unless="${bloger.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.jpg} + ');'"></div>
-            <p class="profile-nickname" th:text="${bloger.nickname}">닉네임</p>
+            <a th:href="@{/blog/{userId}(userId=${bloger.userId})}"><div class="profile-image" th:href="@{/blog/{userId}(userId=${bloger.userId})}" th:if="${bloger.profileImage != null}" th:style="'background-image: url(' + @{${bloger.profileImage}} + '); background-color: white;'"></div></a>
+            <a th:href="@{/blog/{userId}(userId=${bloger.userId})}"><div class="profile-image" th:href="@{/blog/{userId}(userId=${bloger.userId})}" th:unless="${bloger.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.png} + '); background-color: white;'"></div></a>
+            <a th:href="@{/blog/{userId}(userId=${bloger.userId})}" style="text-decoration: none;"><p class="profile-nickname" th:text="${bloger.nickname} + '`s log'">닉네임</p></a>
         </div>
         <div class="line-section"><hr></div>
         <div class="category-section">
-            <p class="category-title">전체보기</p>
+            <p class="category-title">카테고리</p>
             <ul class="category-list sidebar-category-list">
+                <li class="category-item">
+                    <a th:href="@{/blog/{userId}(userId=${bloger.userId})}" class="category-item-link" th:classappend="${selectCategoryId} == null ? ' selected-category'">
+                        <span>전체보기</span>
+                        <span th:text="' (' + ${totalPostCount} + ')'"></span>
+                    </a>
+                </li>
                 <li th:each="category : ${categoryList}" class="category-item">
-                    <a class="category-item-link" th:text="${category.name}"></a>
+                    <a th:href="@{'/blog/' + ${bloger.userId} + '?categoryId=' + ${category.categoryId}}" class="category-item-link" th:classappend="${selectCategoryId} == ${category.categoryId} ? ' selected-category'">
+                        <span th:text="${category.name}"></span>
+                        <span th:text="' (' + ${category.postCount} + ')'"></span>
+                    </a>
                 </li>
             </ul>
         </div>
+<!--        <div class="line-section"><hr></div>-->
     </div>
 </th:block>
 </body>

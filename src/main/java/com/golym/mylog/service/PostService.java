@@ -60,7 +60,20 @@ public class PostService {
     }
 
     public List<PostDto> getPostListByUserId(String userId, Pageable pageable) {
+        System.out.println("PostService.getPostListByUserId");
         Page<PostEntity> pagingPostEntityList = postRepository.findAllByUser_UserIdAndIsActive(userId, true, pageable);
+        System.out.println("pagingPostEntityList.getTotalElements() = " + pagingPostEntityList.getTotalElements());
+        return pagingPostEntityList.stream()
+                .map(PostDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public int getTotalPostCountByUserId(String userId) {
+        return postRepository.countByUser_UserIdAndIsActive(userId, true);
+    }
+
+    public List<PostDto> getPostListByUserIdAndCategoryId(String userId, String categoryId, Pageable pageable) {
+        Page<PostEntity> pagingPostEntityList = postRepository.findAllByUser_UserIdAndCategory_CategoryIdAndIsActive(userId, categoryId, true, pageable);
         return pagingPostEntityList.stream()
                 .map(PostDto::new)
                 .collect(Collectors.toList());

@@ -15,7 +15,11 @@ import java.time.LocalDateTime;
 @Builder
 public class PostDto {
 
+    private static final int SYMMARY_LENGTH = 200;  // summary 필드 요약 길이
+
     private String postId;
+    private String userId;
+    private String categoryId;
     private String writer;
     private String category;
     private String title;
@@ -26,9 +30,10 @@ public class PostDto {
     private LocalDateTime updateAt;
     private int commentCount;
 
-
     public PostDto(PostEntity postEntity) {
         this.postId = postEntity.getPostId();
+        this.userId = postEntity.getUser().getUserId();
+        this.categoryId = postEntity.getCategory() == null ? null : postEntity.getCategory().getCategoryId();
         this.writer = postEntity.getUser().getNickname();
         this.category = postEntity.getCategory() == null ? null : postEntity.getCategory().getName();
         this.title = postEntity.getTitle();
@@ -47,9 +52,8 @@ public class PostDto {
 
     // content summarize
     private String summarizeContent(String content) {
-        int summaryLength = 100; // 원하는 요약 길이
-        if (content.length() > summaryLength) {
-            return content.substring(0, summaryLength) + "...";
+        if (content.length() > SYMMARY_LENGTH) {
+            return content.substring(0, SYMMARY_LENGTH) + "...";
         } else {
             return content;
         }

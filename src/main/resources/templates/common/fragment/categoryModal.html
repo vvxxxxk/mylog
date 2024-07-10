@@ -63,7 +63,7 @@
             `;
             document.querySelector(".modal-category-list").appendChild(newItem);
             // 사이드바 업데이트
-            updateSidebarCategoryList(categoryId, name, 'add');
+<!--            updateSidebarCategoryList(categoryId, name, 'add');-->
         }
 
         // 이벤트 위임을 사용하여 카테고리 선택 및 버튼 클릭 처리
@@ -146,7 +146,7 @@
                 }
                 // Remove the category item from the list
                 categoryItem.remove();
-                updateSidebarCategoryList(categoryId, null, 'delete');
+<!--                updateSidebarCategoryList(categoryId, null, 'delete');-->
             })
             .catch(error => {
                 console.error('There was a problem with the delete operation:', error);
@@ -178,7 +178,7 @@
                 })
                 .then(data => {
                     categoryItem.querySelector('.category-item-link').innerText = newName;
-                    updateSidebarCategoryList(categoryId, newName, 'edit');
+<!--                    updateSidebarCategoryList(categoryId, newName, 'edit');-->
                 })
                 .catch(error => {
                     console.error('There was a problem with the edit operation:', error);
@@ -188,29 +188,29 @@
         }
     });
 
-    function updateSidebarCategoryList(categoryId, categoryName, action) {
-        const sidebarCategoryList = document.querySelector('.sidebar-category-list');
+<!--    function updateSidebarCategoryList(categoryId, categoryName, action) {-->
+<!--        const sidebarCategoryList = document.querySelector('.sidebar-category-list');-->
 
-        if (action === 'add') {
-            const newItem = document.createElement("li");
-            newItem.className = "category-item";
-            newItem.innerHTML = `
-                <span class="category-toggle-icon">▶</span>
-                <a class="category-item-link" data-id="${categoryId}">${categoryName}</a>
-            `;
-            sidebarCategoryList.appendChild(newItem);
-        } else if (action === 'edit') {
-            const itemToEdit = sidebarCategoryList.querySelector(`.category-item-link[data-id='${categoryId}']`);
-            if (itemToEdit) {
-                itemToEdit.textContent = categoryName;
-            }
-        } else if (action === 'delete') {
-            const itemToDelete = sidebarCategoryList.querySelector(`.category-item-link[data-id='${categoryId}']`);
-            if (itemToDelete) {
-                itemToDelete.closest('.category-item').remove();
-            }
-        }
-    }
+<!--        if (action === 'add') {-->
+<!--            const newItem = document.createElement("li");-->
+<!--            newItem.className = "category-item";-->
+<!--            newItem.innerHTML = `-->
+<!--                <span class="category-toggle-icon">▶</span>-->
+<!--                <a class="category-item-link" data-id="${categoryId}">${categoryName}</a>-->
+<!--            `;-->
+<!--            sidebarCategoryList.appendChild(newItem);-->
+<!--        } else if (action === 'edit') {-->
+<!--            const itemToEdit = sidebarCategoryList.querySelector(`.category-item-link[data-id='${categoryId}']`);-->
+<!--            if (itemToEdit) {-->
+<!--                itemToEdit.textContent = categoryName;-->
+<!--            }-->
+<!--        } else if (action === 'delete') {-->
+<!--            const itemToDelete = sidebarCategoryList.querySelector(`.category-item-link[data-id='${categoryId}']`);-->
+<!--            if (itemToDelete) {-->
+<!--                itemToDelete.closest('.category-item').remove();-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
 </script>
 </th:block>
 </body>

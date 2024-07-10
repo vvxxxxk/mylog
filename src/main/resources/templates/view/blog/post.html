@@ -23,6 +23,8 @@
                 <div class="col-md-6">
                     <h1 class="content-title" th:text="${post.title}"></h1>
                     <p class="text-muted">
+                        <small><a th:href="@{/blog/{userId}(userId=${bloger.userId})}" style="text-decoration: none;">작성자 Mylog</a></small>
+                        <span class="mx-2">|</span>
                         <small th:text="'Writer: ' + ${post.writer}">Writer: user</small>
                         <span class="mx-2">|</span>
                         <small th:text="'Category: ' + ${post.category}">Category: General</small>

@@ -28,7 +28,8 @@ public class CategoryService {
     public List<CategoryDto> getCategoryList(String userId) {
         List<CategoryEntity> categoryEntityList = categoryRepository.findAllByUser_UserIdOrderByCreateAt(userId);
         return categoryEntityList.stream()
-                .map(categoryEntity -> modelMapper.map(categoryEntity, CategoryDto.class))
+                .map(CategoryDto::new)
+                // .map(categoryEntity -> modelMapper.map(categoryEntity, CategoryDto.class))
                 .collect(Collectors.toList());
     }
 

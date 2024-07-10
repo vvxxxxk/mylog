@@ -9,7 +9,7 @@
 <body>
 <div class="blog-container">
     <!-- 사이드 바 영역 -->
-    <div class="sidebar" th:replace="~{common/fragment/sidebar :: sidebar(${bloger}, ${categoryList})}"></div>
+    <div class="sidebar" th:replace="~{common/fragment/sidebar :: sidebar(${bloger}, ${categoryList}, ${totalPostCount}, ${selectCategoryId})}"></div>
     <!-- 메인 콘텐츠 영역 -->
     <div class="main-content with-sidebar">
         <!-- 헤더 영역 -->
@@ -65,6 +65,12 @@
 </div>
 <!-- 공통 스크립트 -->
 <div th:replace="~{common/fragment/script :: common_script}"></div>
+<script th:inline="javascript"  >
+    /*<![CDATA[*/
+    const blogerId = /*[[${bloger.userId != null ? bloger.userId : ''}]]*/ '';
+    const selectCategoryId = /*[[${selectCategoryId != null ? selectCategoryId : ''}]]*/ '';
+    /*]]>*/
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         console.log("DOM fully loaded and parsed");
@@ -75,7 +81,7 @@
         function loadMorePosts() {
             console.log("Loading more posts...");
             currentPage++;
-            fetch(`/api/blog/post?page=${currentPage}&size=${pageSize}`)
+            fetch(`/api/blog/post?userId=${blogerId}&categoryId=${selectCategoryId}&page=${currentPage}&size=${pageSize}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("Network response was not ok");

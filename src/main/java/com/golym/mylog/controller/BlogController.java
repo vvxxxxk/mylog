@@ -113,8 +113,16 @@ public class BlogController {
 
     /** 포스트 조회 **/
     @GetMapping("/post")
-    public ResponseEntity<?> getPosts(@PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        List<PostDto> postList = postService.getPostList(pageable);
+    public ResponseEntity<?> getPosts(@RequestParam(value = "userId", required = false) String userId,
+                                      @RequestParam(value = "categoryId", required = false) String categoryId,
+                                      @PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        List<PostDto> postList;
+        if (userId == null || userId.isEmpty())
+            postList = postService.getPostList(pageable);
+        else if (categoryId == null || categoryId.isEmpty())
+            postList = postService.getPostListByUserId(userId, pageable);
+        else
+            postList = postService.getPostListByUserIdAndCategoryId(userId, categoryId, pageable);
 
         return new ResponseEntity<>(ResponseGetPostsDto.builder()
                 .response(new ResponseDto(ResponseType.SUCCESS))

@@ -60,13 +60,15 @@ public class ViewController {
         String userId = authentication.getName();
 
         UserDto user = new UserDto();
+        UserDto bloger = new UserDto();
         if (!userId.equals("anonymousUser"))
             user = userService.getUser(userId);
 
         List<PostDto> postList = postService.getPostList(pageable);
         model.addAttribute("user", user);
+        model.addAttribute("bloger", bloger);
         model.addAttribute("postList", postList);
-        return "/view/blog/main";
+        return "/view/main";
     }
 
     /**
@@ -85,9 +87,11 @@ public class ViewController {
             user = userService.getUser(userId);
 
         PostDto post = postService.getPost(postId);
+        UserDto bloger = userService.getUser(post.getUserId());
         List<CommentDto> commentList = commentService.getComment(postId, pageable);
 
         model.addAttribute("user", user);
+        model.addAttribute("bloger", bloger);
         model.addAttribute("post", post);
         model.addAttribute("commentList", commentList);
 
@@ -98,6 +102,7 @@ public class ViewController {
     @GetMapping("/blog/{userId}")
     public String blogForm(Model model,
                            @PathVariable("userId") String blogerId,
+                           @RequestParam(value = "categoryId", required = false) String selectCategoryId,
                            @PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -107,14 +112,21 @@ public class ViewController {
         if (!userId.equals("anonymousUser"))
             user = userService.getUser(userId);
 
-        //UserDto user = userService.getUser(userId);
+        List<PostDto> postList;
+        if (selectCategoryId == null)
+            postList = postService.getPostListByUserId(blogerId, pageable);
+        else
+            postList = postService.getPostListByUserIdAndCategoryId(blogerId, selectCategoryId, pageable);
+
         UserDto bloger = userService.getUser(blogerId);
         List<CategoryDto> categoryList = categoryService.getCategoryList(blogerId);
-        List<PostDto> postList = postService.getPostListByUserId(blogerId, pageable);
+        int totalPostCount = postService.getTotalPostCountByUserId(blogerId);
         model.addAttribute("user", user);
         model.addAttribute("bloger", bloger);
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("postList", postList);
+        model.addAttribute("totalPostCount", totalPostCount);
+        model.addAttribute("selectCategoryId", selectCategoryId);
         return "/view/blog/blog";
     }
 
@@ -126,8 +138,10 @@ public class ViewController {
 
         UserDto user = userService.getUser(userId);
         List<CategoryDto> categoryList = categoryService.getCategoryList(userId);
+        int totalPostCount = postService.getTotalPostCountByUserId(userId);
         model.addAttribute("user", user);
         model.addAttribute("categoryList", categoryList);
+        model.addAttribute("totalPostCount", totalPostCount);
         return "/view/blog/write";
     }
 }
