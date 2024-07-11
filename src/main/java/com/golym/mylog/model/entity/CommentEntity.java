@@ -61,4 +61,12 @@ public class CommentEntity {
     protected void onUpdate() {
         this.updateAt = LocalDateTime.now();
     }
+
+    public void updateComment(String content) {
+        this.content = content;
+    }
+
+    public void deleteComment() {
+        this.isActive = false;
+    }
 }

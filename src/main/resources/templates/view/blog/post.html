@@ -84,9 +84,8 @@
                                     </div>
                                     <div class="reply-form">
                                         <textarea class="reply-content"></textarea>
-                                        <button class="btn btn-primary replySubmitButton" th:attr="data-id=${comment.commentId}">답글 작성</button>
+                                        <button class="btn btn-primary replySubmitButton" th:attr="data-id=${comment.commentId}">작성하기</button>
                                     </div>
-                                    <!-- 답글을 한 계층만 렌더링 -->
                                     <div class="comment-reply" th:each="reply : ${comment.replies}">
                                         <div class="comment" th:attr="data-id=${reply.commentId}">
                                             <div class="comment-header">
@@ -111,7 +110,7 @@
                         </div>
                         <div th:if="${#authentication.name != 'anonymousUser'}" class="comment-form">
                             <textarea id="comment-content" placeholder="댓글을 작성하세요"></textarea>
-                            <button id="commentSubmitButton" class="btn btn-success">댓글 작성</button>
+                            <button id="commentSubmitButton" class="btn btn-success">작성하기</button>
                         </div>
                     </div>
                 </div>
@@ -143,6 +142,7 @@
         height: '600px'
     });
 
+    // 게시글 삭제
     document.querySelectorAll('.postDeleteButton').forEach(button => {
         button.addEventListener('click', function(event) {
             event.preventDefault();
@@ -201,6 +201,124 @@
             }
         })
         .catch(error => console.error("There was a problem with the fetch operation:", error));
+    });
+
+    // 댓글 수정
+    document.querySelectorAll('.commentEditButton').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const commentId = button.getAttribute('data-id');
+            const commentContent = prompt("댓글을 수정하세요:");
+
+            if (commentContent) {
+                fetch(`/api/blog/comment/${commentId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content: commentContent })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === true) {
+                        location.reload(); // 페이지 새로고침하여 댓글 갱신
+                    } else {
+                        alert("댓글 수정에 실패했습니다.");
+                    }
+                })
+                .catch(error => console.error("There was a problem with the fetch operation:", error));
+            }
+        });
+    });
+
+    // 댓글 삭제
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.commentDeleteButton').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const commentId = button.getAttribute('data-id');
+
+                if (confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
+                    fetch(`/api/blog/comment/${commentId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status === true) {
+                            location.reload(); // 페이지 새로고침하여 댓글 갱신
+                        } else {
+                            alert("댓글 삭제에 실패했습니다.");
+                        }
+                    })
+                    .catch(error => console.error("There was a problem with the fetch operation:", error));
+                }
+            });
+        });
+    });
+
+    // 답글 작성 폼 토글
+    document.querySelectorAll('.replyButton').forEach(button => {
+        button.addEventListener('click', function(event) {
+            console.log('tetetetet');
+            event.preventDefault();
+            const replyForm = button.closest('.comment').querySelector('.reply-form');
+            if (replyForm) {
+                if (replyForm.style.display === 'none' || replyForm.style.display === '') {
+                    replyForm.style.display = 'block';
+                } else {
+                    replyForm.style.display = 'none';
+                }
+            }
+        });
+    });
+
+    // 답글 작성
+    document.querySelectorAll('.replySubmitButton').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const parentCommentId = button.getAttribute('data-id');
+            const replyContent = button.closest('.reply-form').querySelector('.reply-content').value;
+
+            if (!replyContent.trim()) {
+                alert("답글 내용을 입력해주세요.");
+                return;
+            }
+
+            fetch(`/api/blog/comment/reply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: replyContent, parentCommentId: parentCommentId, postId: postId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === true) {
+                    location.reload(); // 페이지 새로고침하여 댓글 갱신
+                } else {
+                    alert("답글 작성에 실패했습니다.");
+                }
+            })
+            .catch(error => console.error("There was a problem with the fetch operation:", error));
+        });
     });
 
 

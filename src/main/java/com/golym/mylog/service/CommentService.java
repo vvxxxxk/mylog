@@ -49,4 +49,42 @@ public class CommentService {
                 .isActive(true)
                 .build());
     }
+
+    public boolean isExistsCommentIdAndUser_UserId(String commentId, String userId) {
+        return commentRepository.existsByCommentIdAndUser_UserIdAndIsActive(commentId, userId, true);
+    }
+
+    @Transactional
+    public void updateComment(String commentId, String content) {
+
+        CommentEntity commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BadRequestException("Not found comment. commentId=" + commentId));
+        commentEntity.updateComment(content);
+        commentRepository.save(commentEntity);
+    }
+
+    @Transactional
+    public void deleteComment(String commentId) {
+        CommentEntity commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BadRequestException("Not found comment. commentId=" + commentId));
+        commentEntity.deleteComment();
+        commentRepository.save(commentEntity);
+    }
+
+    @Transactional
+    public void createReply(String userId, String parentCommentId, String postId, String content) {
+
+        commentRepository.save(CommentEntity.builder()
+                .commentId(CodeGenerator.generateID("CM"))
+                .post(postRepository.findById(postId)
+                        .orElseThrow(() -> new BadRequestException("Not found post. postId=" + postId)))
+                .user(userRepository.findById(userId)
+                        .orElseThrow(() -> new BadRequestException("Not found user. userId" + userId)))
+                .parentComment(commentRepository.findById(parentCommentId)
+                        .orElseThrow(() -> new BadRequestException("Not found comment. commentId" + parentCommentId)))
+                .content(content)
+                .depth(1)
+                .isActive(true)
+                .build());
+    }
 }

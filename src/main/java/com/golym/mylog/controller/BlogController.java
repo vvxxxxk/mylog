@@ -69,7 +69,7 @@ public class BlogController {
 
         // 요청한 유저의 카테고리가 맞는지 체크
         if (!categoryService.isExistsCategoryByCategoryIdAndUserId(categoryId, userId))
-            throw new BadRequestException("Invalid delete category.");
+            throw new BadRequestException("Invalid request delete category.");
 
         // 카테고리 삭제
         categoryService.deleteCategory(userId, categoryId);
@@ -87,7 +87,7 @@ public class BlogController {
 
         // 요청한 유저의 카테고리가 맞는지 체크
         if (!categoryService.isExistsCategoryByCategoryIdAndUserId(categoryId, userId))
-            throw new BadRequestException("Invalid edit category.");
+            throw new BadRequestException("Invalid request edit category.");
 
         // 카테고리명 수정
         categoryService.editCategoryName(categoryId, params.getName());
@@ -109,7 +109,9 @@ public class BlogController {
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 
-    /** 포스트 목록 조회 */
+    /**
+     * 포스트 목록 조회
+     */
     @GetMapping("/post")
     public ResponseEntity<?> getPosts(@RequestParam(value = "userId", required = false) String userId,
                                       @RequestParam(value = "categoryId", required = false) String categoryId,
@@ -129,7 +131,9 @@ public class BlogController {
                 HttpStatus.OK);
     }
 
-    /** 포스트 삭제 */
+    /**
+     * 포스트 삭제
+     */
     @DeleteMapping("/post/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable("postId") String postId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -137,7 +141,7 @@ public class BlogController {
 
         // 요청한 유저의 게시글이 맞는지 체크
         if (!postService.isExistsPostByPostAndUserId(postId, userId))
-            throw new BadRequestException("Invalid delete post.");
+            throw new BadRequestException("Invalid request delete post.");
 
         postService.deletePost(postId);
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
@@ -155,7 +159,7 @@ public class BlogController {
 
         // 요청한 유저의 게시글이 맞는지 체크
         if (!postService.isExistsPostByPostAndUserId(postId, userId))
-            throw new BadRequestException("Invalid delete post.");
+            throw new BadRequestException("Invalid request delete post.");
 
         // 카테고리가 비어있을 경우 null
         if (params.getCategoryId().isEmpty())
@@ -176,7 +180,55 @@ public class BlogController {
         System.out.println("params = " + params);
 
         commentService.createComment(userId, params.getPostId(), params.getContent());
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
 
+    /**
+     * 댓글 수정
+     */
+    @PatchMapping("/comment/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable("commentId") String commentId,
+                                           @Valid @RequestBody RequestUpdateCommentDto params) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        // 요청한 유저의 댓글이 맞는지 체크
+        if (!commentService.isExistsCommentIdAndUser_UserId(commentId, userId))
+            throw new BadRequestException("Invalid request update comment.");
+
+        commentService.updateComment(commentId, params.getContent());
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
+
+    /**
+     * 댓글 삭제
+     */
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable("commentId") String commentId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        // 요청한 유저의 댓글이 맞는지 체크
+        if (!commentService.isExistsCommentIdAndUser_UserId(commentId, userId))
+            throw new BadRequestException("Invalid request update comment.");
+
+        commentService.deleteComment(commentId);
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
+
+    /**
+     * 대댓글 추가
+     */
+    @PostMapping("/comment/reply")
+    public ResponseEntity<?> createReply(@Valid @RequestBody RequestCreateReplyDto params) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        System.out.println("params = " + params);
+
+        commentService.createReply(userId, params.getParentCommentId(), params.getPostId(), params.getContent());
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 }
