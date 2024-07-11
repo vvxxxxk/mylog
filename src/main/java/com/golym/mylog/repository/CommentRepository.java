@@ -10,5 +10,6 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, String> {
-    Page<CommentEntity> findByPost_PostIdAndIsActive(String postId, boolean isActive, Pageable pageable);
+    // Page<CommentEntity> findByPost_PostIdAndIsActive(String postId, boolean isActive, Pageable pageable);
+    List<CommentEntity> findByPost_PostIdAndIsActiveOrderByCreateAt(String postId, boolean isActive);
 }

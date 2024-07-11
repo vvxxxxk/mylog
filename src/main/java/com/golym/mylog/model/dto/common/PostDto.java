@@ -1,6 +1,7 @@
 package com.golym.mylog.model.dto.common;
 
 import com.golym.mylog.common.utils.MarkdownConvertor;
+import com.golym.mylog.model.entity.CommentEntity;
 import com.golym.mylog.model.entity.PostEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +43,9 @@ public class PostDto {
         this.viewCount = postEntity.getViewCount();
         this.createAt = postEntity.getCreateAt();
         this.updateAt = postEntity.getUpdateAt();
-        this.commentCount = postEntity.getComments().isEmpty() ? 0 : postEntity.getComments().size();
+        this.commentCount = (int) postEntity.getComments().stream()
+                .filter(CommentEntity::isActive)
+                .count();
     }
 
     // content 이미지 url 제거

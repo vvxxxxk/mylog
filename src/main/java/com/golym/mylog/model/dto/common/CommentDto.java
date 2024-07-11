@@ -27,7 +27,7 @@ public class CommentDto {
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
 
-    public CommentDto(CommentEntity commentEntity, int depth) {
+    public CommentDto(CommentEntity commentEntity) {
         this.commentId = commentEntity.getCommentId();
         this.postId = commentEntity.getPost().getPostId();
         this.userId = commentEntity.getUser().getUserId();
@@ -35,8 +35,9 @@ public class CommentDto {
         this.depth = commentEntity.getDepth();
         this.parentCommentId = commentEntity.getParentComment() == null ? null : commentEntity.getParentComment().getCommentId();
         this.replies = commentEntity.getReplies().stream()
+                .filter(comment -> comment.isActive())
                 .sorted((a, b) -> a.getCreateAt().compareTo(b.getCreateAt()))
-                .map(reply -> new CommentDto(reply, depth + 1))
+                .map(CommentDto::new)
                 .collect(Collectors.toList());
         this.content = commentEntity.getContent();
         this.createAt = commentEntity.getCreateAt();

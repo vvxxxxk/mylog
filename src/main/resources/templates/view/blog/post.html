@@ -56,6 +56,68 @@
                 </div>
                 <div class="col-md-3"></div>
             </div>
+
+            <!-- 댓글 영역 -->
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="comment-section" id="comments-section">
+                        <h3>댓글</h3>
+                        <div id="comments-list">
+                            <div th:each="comment : ${commentList}">
+                                <div class="comment" th:attr="data-id=${comment.commentId}">
+                                    <div class="comment-header">
+                                        <span class="comment-author" th:text="${comment.nickname}"></span>
+                                        <span class="comment-date" th:text="${comment.createAt}"></span>
+                                    </div>
+                                    <div class="comment-body">
+                                        <p th:text="${comment.content}"></p>
+                                    </div>
+                                    <div class="comment-footer">
+                                        <span th:if="${user != null and user.userId == comment.userId}">
+                                            <a href="#" class="commentEditButton" th:attr="data-id=${comment.commentId}">수정</a>
+                                        </span>
+                                        <span th:if="${user != null and user.userId == comment.userId}">
+                                            <a href="#" class="commentDeleteButton" th:attr="data-id=${comment.commentId}">삭제</a>
+                                        </span>
+                                        <a href="#" class="replyButton" th:if="${comment.depth < 1}" th:attr="data-id=${comment.commentId}">답글</a>
+                                    </div>
+                                    <div class="reply-form">
+                                        <textarea class="reply-content"></textarea>
+                                        <button class="btn btn-primary replySubmitButton" th:attr="data-id=${comment.commentId}">답글 작성</button>
+                                    </div>
+                                    <!-- 답글을 한 계층만 렌더링 -->
+                                    <div class="comment-reply" th:each="reply : ${comment.replies}">
+                                        <div class="comment" th:attr="data-id=${reply.commentId}">
+                                            <div class="comment-header">
+                                                <span class="comment-author" th:text="${reply.nickname}"></span>
+                                                <span class="comment-date" th:text="${reply.createAt}"></span>
+                                            </div>
+                                            <div class="comment-body">
+                                                <p th:text="${reply.content}"></p>
+                                            </div>
+                                            <div class="comment-footer">
+                                                <span th:if="${user != null and user.userId == reply.userId}">
+                                                    <a href="#" class="commentEditButton" th:attr="data-id=${reply.commentId}">수정</a>
+                                                </span>
+                                                <span th:if="${user != null and user.userId == reply.userId}">
+                                                    <a href="#" class="commentDeleteButton" th:attr="data-id=${reply.commentId}">삭제</a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${#authentication.name != 'anonymousUser'}" class="comment-form">
+                            <textarea id="comment-content" placeholder="댓글을 작성하세요"></textarea>
+                            <button id="commentSubmitButton" class="btn btn-success">댓글 작성</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -66,6 +128,7 @@
 <script th:inline="javascript"  >
     /*<![CDATA[*/
     const userId = /*[[${user.userId != null ? user.userId : ''}]]*/ '';
+    const postId = /*[[${post.postId != null ? post.postId : ''}]]*/ '';
     /*]]>*/
 </script>
 <script th:inline="javascript">
@@ -105,6 +168,41 @@
             }
         });
     });
+
+    // 댓글 작성
+    document.getElementById('commentSubmitButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        const commentContent = document.getElementById('comment-content').value;
+
+        if (!commentContent.trim()) {
+            alert("댓글 내용을 입력해주세요.");
+            return;
+        }
+
+        fetch(`/api/blog/comment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: commentContent,
+                                   postId: postId })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === true) {
+                location.reload(); // 페이지 새로고침하여 댓글 갱신
+            } else {
+                alert("댓글 작성에 실패했습니다.");
+            }
+        })
+        .catch(error => console.error("There was a problem with the fetch operation:", error));
+    });
+
 
     /*]]>*/
 </script>

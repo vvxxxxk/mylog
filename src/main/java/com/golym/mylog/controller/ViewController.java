@@ -89,7 +89,10 @@ public class ViewController {
 
         PostDto post = postService.getPost(postId);
         UserDto bloger = userService.getUser(post.getUserId());
-        List<CommentDto> commentList = commentService.getComment(postId, pageable);
+        List<CommentDto> commentList = commentService.getComment(postId);
+
+
+        System.out.println("commentList = " + commentList);
 
         model.addAttribute("user", user);
         model.addAttribute("bloger", bloger);

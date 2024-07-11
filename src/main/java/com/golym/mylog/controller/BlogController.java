@@ -5,14 +5,12 @@ import com.golym.mylog.common.exception.BadRequestException;
 import com.golym.mylog.common.exception.ConflictException;
 import com.golym.mylog.model.dto.common.CategoryDto;
 import com.golym.mylog.model.dto.common.PostDto;
-import com.golym.mylog.model.dto.request.RequestCreateCategoryDto;
-import com.golym.mylog.model.dto.request.RequestCreatePostDto;
-import com.golym.mylog.model.dto.request.RequestUpdateCategoryNameDto;
-import com.golym.mylog.model.dto.request.RequestUpdatePostDto;
+import com.golym.mylog.model.dto.request.*;
 import com.golym.mylog.model.dto.response.ResponseCreateCategoryDto;
 import com.golym.mylog.model.dto.response.ResponseDto;
 import com.golym.mylog.model.dto.response.ResponseGetPostsDto;
 import com.golym.mylog.service.CategoryService;
+import com.golym.mylog.service.CommentService;
 import com.golym.mylog.service.PostService;
 import com.golym.mylog.service.UserService;
 import jakarta.validation.Valid;
@@ -39,6 +37,7 @@ public class BlogController {
     private final UserService userService;
     private final CategoryService categoryService;
     private final PostService postService;
+    private final CommentService commentService;
 
     /* 카테고리 추가 */
     @PostMapping("/category")
@@ -149,7 +148,7 @@ public class BlogController {
      */
     @PatchMapping("/post/{postId}")
     public ResponseEntity<?> updatePost(@PathVariable("postId") String postId,
-                                        @RequestBody RequestUpdatePostDto params) {
+                                        @Valid @RequestBody RequestUpdatePostDto params) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
@@ -163,6 +162,21 @@ public class BlogController {
             params.setCategoryId(null);
 
         postService.updatePost(postId, params.getTitle(), params.getContent(), params.getCategoryId());
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
+
+    /**
+     * 댓글 작성
+     */
+    @PostMapping("/comment")
+    public ResponseEntity<?> createComment(@Valid @RequestBody RequestCreateCommentDto params) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        System.out.println("params = " + params);
+
+        commentService.createComment(userId, params.getPostId(), params.getContent());
+
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 }
