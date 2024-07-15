@@ -6,7 +6,7 @@ import com.golym.mylog.common.utils.CodeGenerator;
 import com.golym.mylog.model.dto.common.UserDto;
 import com.golym.mylog.model.dto.request.RequestSendAuthCodeDto;
 import com.golym.mylog.model.dto.request.RequestSignupDto;
-import com.golym.mylog.model.entity.AuthEmail;
+import com.golym.mylog.model.entity.AuthEmailEntity;
 import com.golym.mylog.model.entity.RoleEntity;
 import com.golym.mylog.model.entity.UserEntity;
 import com.golym.mylog.model.entity.UserRoleMappingEntity;
@@ -22,11 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,8 +52,8 @@ public class UserService {
         sendEmail(toEmail, authcode);
 
         // 메일주소, 인증코드를 redis에 저장
-        AuthEmail authEmail = new AuthEmail(toEmail, authcode);
-        authEmailRepository.save(authEmail);
+        AuthEmailEntity authEmailEntity = new AuthEmailEntity(toEmail, authcode);
+        authEmailRepository.save(authEmailEntity);
     }
 
     private void sendEmail(String toEmail, String authcode) {
@@ -80,10 +76,10 @@ public class UserService {
 
     public boolean verifyAuthcode(String email, String authcode) {
 
-        AuthEmail authEmail = authEmailRepository.findById(email)
+        AuthEmailEntity authEmailEntity = authEmailRepository.findById(email)
                 .orElseThrow(() -> new BadRequestException("Invalid email."));
 
-        return email.equals(authEmail.getEmail()) && authcode.equals(authEmail.getAuthcode());
+        return email.equals(authEmailEntity.getEmail()) && authcode.equals(authEmailEntity.getAuthcode());
     }
 
     public boolean isExistEmail(String email) {

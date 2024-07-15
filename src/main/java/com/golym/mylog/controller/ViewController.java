@@ -8,6 +8,7 @@ import com.golym.mylog.service.CategoryService;
 import com.golym.mylog.service.CommentService;
 import com.golym.mylog.service.PostService;
 import com.golym.mylog.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -77,11 +78,15 @@ public class ViewController {
      **/
     @GetMapping("/blog/post/{postId}")
     public String postForm(Model model,
+                           HttpServletRequest request,
                            @PathVariable("postId") String postId,
                            @PageableDefault(page = 0, size = 5, sort = "createAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
+
+        System.out.println("request.getRemoteAddr() = " + request.getRemoteAddr());
+        System.out.println("request.getLocalAddr() = " + request.getLocalAddr());
 
         UserDto user = new UserDto();
         if (!userId.equals("anonymousUser"))
