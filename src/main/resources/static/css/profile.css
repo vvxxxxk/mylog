@@ -1,0 +1,83 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+
+.profile-container {
+    display: flex;
+    flex: 1;
+    /*overflow: auto;*/
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: calc(100% - 0px);
+    background-color: #fff;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.none-area {
+    height: 25%;
+}
+
+/*.profile-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}*/
+.profile-picture {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+}
+.profile-buttons {
+    display: flex;
+    flex-direction: column;
+}
+.profile-buttons button {
+    margin-bottom: 5px;
+}
+.profile-info {
+    margin-top: 20px;
+}
+.profile-info h5 {
+    margin-bottom: 10px;
+}
+.profile-info p {
+    margin-bottom: 10px;
+}
+.profile-info .btn {
+    font-size: 0.875rem;
+}
+.profile-actions {
+    margin-top: 30px;
+}
+.delete-account {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head th:replace="~{common/layout/head :: common_head(~{::title},~{::link})}">
+    <title>Mylog</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+<body>
+<div class="profile-container profile-page">
+
+    <div class="main-content">
+        <!-- 헤더 영역 -->
+        <div class="header" th:replace="~{common/fragment/header :: header(${user})}"></div>
+
+        <!-- 빈 영역 -->
+        <div class="none-area"></div>
+
+        <!-- 컨텐츠 영역 -->
+        <div class="content">
+            <!-- 프로필 이미지 -->
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="profile-picture">
+                        <div class="profile-image" th:if="${user.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
+                        <div class="profile-image" th:unless="${user.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.png} + ');'"></div>
+                        <div class="profile-buttons">
+                            <input type="file" id="profileImageInput" class="d-none" onchange="uploadProfileImage()">
+                            <button class="btn btn-primary" onclick="document.getElementById('profileImageInput').click();">이미지 업로드</button>
+                            <button class="btn btn-danger">이미지 제거</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <!-- 라인 -->
+            <div class="row"><div class="col-md-4"></div><div class="col-md-4"><hr></div><div class="col-md-4"></div></div>
+            <!-- 이메일 -->
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="profile-info">
+                        <h5>이메일</h5>
+                        <div class="d-flex justify-content-between">
+                            <p id="user-id" th:text="${user.email}">사용자 아이디</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <!-- 닉네임 -->
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="profile-info">
+                        <h5>닉네임</h5>
+                        <div class="d-flex justify-content-between">
+                            <p id="user-nickname" th:text="${user.nickname}">사용자 닉네임</p>
+                            <button class="btn btn-link" id="edit-nickname-button" onclick="editNickname()">수정</button>
+                        </div>
+                        <div class="d-none" id="nickname-edit-form">
+                            <input type="text" id="new-nickname" class="form-control" placeholder="새 닉네임">
+                            <button class="btn btn-primary mt-2" onclick="saveNickname()">저장</button>
+                            <button class="btn btn-secondary mt-2" onclick="cancelEdit()">취소</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <!-- 비밀번호 -->
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="profile-info">
+                        <h5>비밀번호</h5>
+                        <div class="d-flex justify-content-between">
+                            <p>********</p>
+                            <button class="btn btn-link" id="edit-password-button" onclick="editPassword()">수정</button>
+                        </div>
+                        <div class="d-none" id="password-edit-form">
+                            <input type="password" id="current-password" class="form-control mt-2" placeholder="현재 비밀번호">
+                            <input type="password" id="new-password" class="form-control mt-2" placeholder="새 비밀번호">
+                            <input type="password" id="confirm-password" class="form-control mt-2" placeholder="새 비밀번호 확인">
+                            <button class="btn btn-primary mt-2" onclick="savePassword()">저장</button>
+                            <button class="btn btn-secondary mt-2" onclick="cancelPasswordEdit()">취소</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <!-- 회원 탈퇴 -->
+            <div class="profile-actions text-center mt-4">
+                <button class="btn btn-danger">회원 탈퇴</button>
+            </div>
+            <!-- 라인 -->
+            <div class="row"><div class="col-md-4"></div><div class="col-md-4"><hr></div><div class="col-md-4"></div></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 공통 스크립트 -->
+<div th:replace="~{common/fragment/script :: common_script}"></div>
+<script>
+    function editNickname() {
+        document.getElementById('user-nickname').style.display = 'none';
+        document.getElementById('edit-nickname-button').style.display = 'none';
+        document.getElementById('nickname-edit-form').classList.remove('d-none');
+    }
+
+    function saveNickname() {
+        var newNickname = document.getElementById('new-nickname').value;
+        if (newNickname) {
+            document.getElementById('user-nickname').innerText = newNickname;
+        }
+        cancelEdit();
+    }
+
+    function cancelEdit() {
+        document.getElementById('user-nickname').style.display = 'block';
+        document.getElementById('edit-nickname-button').style.display = 'block';
+        document.getElementById('nickname-edit-form').classList.add('d-none');
+    }
+
+    function editPassword() {
+        document.getElementById('edit-password-button').style.display = 'none';
+        document.getElementById('password-edit-form').classList.remove('d-none');
+    }
+
+    function savePassword() {
+        var currentPassword = document.getElementById('current-password').value;
+        var newPassword = document.getElementById('new-password').value;
+        var confirmPassword = document.getElementById('confirm-password').value;
+
+        if (newPassword && newPassword === confirmPassword) {
+            alert("비밀번호가 성공적으로 변경되었습니다.");
+            // 여기서 실제 비밀번호 변경 로직을 처리
+        } else {
+            alert("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+        }
+        cancelPasswordEdit();
+    }
+
+    function cancelPasswordEdit() {
+        document.getElementById('edit-password-button').style.display = 'block';
+        document.getElementById('password-edit-form').classList.add('d-none');
+    }
+
+    function uploadProfileImage() {
+        var input = document.getElementById('profileImageInput');
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('.profile-image').style.backgroundImage = 'url(' + e.target.result + ')';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+</body>
+</html>

@@ -42,6 +42,7 @@ public class WebSecurityConfig {
             "/blog/{userId}",
             "/blog/write",
             "/api/file/image",
+            "/profile",
             // #############################################
             // View
             "/blog/post/{postId}",
