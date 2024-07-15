@@ -73,4 +73,8 @@ public class UserEntity {
     protected void onUpdate() {
         this.updateAt = LocalDateTime.now();
     }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }

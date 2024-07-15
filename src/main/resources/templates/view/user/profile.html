@@ -25,9 +25,9 @@
                         <div class="profile-image" th:if="${user.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
                         <div class="profile-image" th:unless="${user.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.png} + ');'"></div>
                         <div class="profile-buttons">
-                            <input type="file" id="profileImageInput" class="d-none" onchange="uploadProfileImage()">
-                            <button class="btn btn-primary" onclick="document.getElementById('profileImageInput').click();">이미지 업로드</button>
-                            <button class="btn btn-danger">이미지 제거</button>
+                            <input type="file" id="profileImageInput" class="d-none" onchange="uploadProfileImage()" accept=".png, .jpg, .jpeg">
+                            <button class="btn btn-primary" onclick="document.getElementById('profileImageInput').click();">프로필 업로드</button>
+                            <button class="btn btn-danger" onclick="removeProfileImage()">기본 프로필</button>
                         </div>
                     </div>
                 </div>
@@ -149,12 +149,60 @@
     function uploadProfileImage() {
         var input = document.getElementById('profileImageInput');
         if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                document.querySelector('.profile-image').style.backgroundImage = 'url(' + e.target.result + ')';
-            }
-            reader.readAsDataURL(input.files[0]);
+            var file = input.files[0];
+            
+            // 이미지 업로드
+            var formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/api/file/image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.response.status == true) {
+
+                    // 회원 프로필 이미지 업데이트
+                    var imageUrl = data.url;
+                    fetch('/api/user/profile-image', {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            profileImage: imageUrl
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status == true) {
+                            document.querySelector('.profile-image').style.backgroundImage = 'url(' + imageUrl + ')';
+                        } else {
+                            alert('유저 정보 업데이트에 실패했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('유저 정보 업데이트 중 오류가 발생했습니다.');
+                    });
+
+                } else {
+                    alert('이미지 업로드에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('이미지 업로드 중 오류가 발생했습니다.');
+            });
         }
+    }
+
+
+    function removeProfileImage() {
+        document.querySelector('.profile-image').style.backgroundImage = 'url(/images/default/profile-image.png)';
+        document.getElementById('profileImageInput').value = '';
     }
 </script>
 </body>

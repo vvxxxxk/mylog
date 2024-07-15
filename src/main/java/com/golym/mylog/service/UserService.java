@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +38,6 @@ public class UserService {
     private final AuthEmailRepository authEmailRepository;
     private final UserRoleMappingRepository userRoleMappingRepository;
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
@@ -75,7 +73,6 @@ public class UserService {
     }
 
     public boolean verifyAuthcode(String email, String authcode) {
-
         AuthEmailEntity authEmailEntity = authEmailRepository.findById(email)
                 .orElseThrow(() -> new BadRequestException("Invalid email."));
 
@@ -112,9 +109,7 @@ public class UserService {
         userRoleMappingRepository.save(userRoleMapping);
     }
 
-
     public UserDto getUser(String userId) {
-
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
 
@@ -125,5 +120,14 @@ public class UserService {
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
                 .build();
+    }
+
+    @Transactional
+    public void updateProfileImage(String userId, String profileImage) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
+
+        user.updateProfileImage(profileImage);
+        userRepository.save(user);
     }
 }
