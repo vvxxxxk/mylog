@@ -14,4 +14,6 @@ public interface CommentRepository extends JpaRepository<CommentEntity, String> 
     List<CommentEntity> findByPost_PostIdAndIsActiveOrderByCreateAt(String postId, boolean isActive);
 
     boolean existsByCommentIdAndUser_UserIdAndIsActive(String commentId, String userId, boolean b);
+
+    List<CommentEntity> findAllByUser_UserIdAndIsActive(String userId, boolean isActive);
 }

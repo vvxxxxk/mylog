@@ -85,4 +85,8 @@ public class UserEntity {
     public void updatePassword(String password) {
         this.password = password;
     }
+
+    public void deactivate() {
+        this.isActive = false;
+    }
 }

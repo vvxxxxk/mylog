@@ -61,16 +61,8 @@ public class ViewController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
-        userId = "U-329fd5e949254d0688aafd809c2e5d";
         UserDto user = userService.getUser(userId);
         model.addAttribute("user", user);
-
-//        List<CategoryDto> categoryList = categoryService.getCategoryList(userId);
-//        int totalPostCount = postService.getTotalPostCountByUserId(userId);
-//        model.addAttribute("categoryList", categoryList);
-//        model.addAttribute("totalPostCount", totalPostCount);
-//        model.addAttribute("selectCategoryId", null);
-
         return "/view/user/profile";
     }
 

@@ -7,25 +7,23 @@ import com.golym.mylog.common.utils.CodeGenerator;
 import com.golym.mylog.model.dto.common.UserDto;
 import com.golym.mylog.model.dto.request.RequestSendAuthCodeDto;
 import com.golym.mylog.model.dto.request.RequestSignupDto;
-import com.golym.mylog.model.entity.AuthEmailEntity;
-import com.golym.mylog.model.entity.RoleEntity;
-import com.golym.mylog.model.entity.UserEntity;
-import com.golym.mylog.model.entity.UserRoleMappingEntity;
+import com.golym.mylog.model.entity.*;
 import com.golym.mylog.model.entity.id.UserRoleMappingId;
-import com.golym.mylog.repository.AuthEmailRepository;
-import com.golym.mylog.repository.UserRepository;
-import com.golym.mylog.repository.UserRoleMappingRepository;
+import com.golym.mylog.repository.*;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -38,6 +36,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthEmailRepository authEmailRepository;
     private final UserRoleMappingRepository userRoleMappingRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
@@ -111,7 +111,7 @@ public class UserService {
     }
 
     public UserDto getUser(String userId) {
-        UserEntity user = userRepository.findById(userId)
+        UserEntity user = userRepository.findByUserIdAndIsActive(userId, true)
                 .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
 
         return UserDto.builder()
@@ -147,7 +147,6 @@ public class UserService {
 
     @Transactional
     public void updatePassword(String userId, String password, String newPassword) {
-
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
 
@@ -157,5 +156,28 @@ public class UserService {
 
         user.updatePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void deactivateUser(String userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
+
+        // 회원 비활성화
+        user.deactivate();
+
+        // 회원이 작성한 게시글 비활성화
+        List<PostEntity> postEntityList = postRepository.findAllByUser_UserIdAndIsActive(userId, true);
+        for (PostEntity postEntity : postEntityList)
+            postEntity.deletePost();
+
+        // 회원이 작성한 댓글 비활성화
+        List<CommentEntity> commentEntityList = commentRepository.findAllByUser_UserIdAndIsActive(userId, true);
+        for (CommentEntity commentEntity : commentEntityList)
+            commentEntity.deleteComment();
+
+        userRepository.save(user);
+        postRepository.saveAll(postEntityList);
+        commentRepository.saveAll(commentEntityList);
     }
 }

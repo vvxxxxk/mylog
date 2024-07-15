@@ -14,24 +14,25 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     })
     .then(response => {
         if (response.ok) {
-            return response.text(); // 서버가 200 OK 응답을 보낸 경우
+            return response.text();
         } else {
-            throw new Error('로그인에 실패하였습니다');
+            throw new Error('아이디/비밀번호를 잘못 입력하였거나 탈퇴한 회원입니다.');
         }
     })
     .then(message => {
-        //alert(message);
         window.location.href = redirectUrl;
     })
     .catch((error) => {
-        console.error('Error:', error);
-        alert('로그인에 실패하였습니다');
+        alert('아이디/비밀번호를 잘못 입력하였거나 탈퇴한 회원입니다.');
     });
 });
 
 document.getElementById('logoutButton').addEventListener('click', function(event) {
     event.preventDefault();
+    logout();
+});
 
+function logout() {
     fetch('/api/auth/logout', {
         method: 'POST',
         headers: {
@@ -56,4 +57,4 @@ document.getElementById('logoutButton').addEventListener('click', function(event
         console.error('Error:', error);
         alert('로그아웃에 실패하였습니다');
     });
-});
+}

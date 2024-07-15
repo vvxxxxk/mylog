@@ -91,7 +91,7 @@
             </div>
             <!-- 회원 탈퇴 -->
             <div class="profile-actions text-center mt-4">
-                <button class="btn btn-danger">회원 탈퇴</button>
+                <button class="btn btn-danger" onclick="deleteAccount()">회원 탈퇴</button>
             </div>
             <!-- 라인 -->
             <div class="row"><div class="col-md-4"></div><div class="col-md-4"><hr></div><div class="col-md-4"></div></div>
@@ -253,7 +253,31 @@
             });
         } else {
             alert("새 비밀번호와 새 비밀번호 확인이 일치하지 않거나 올바르지 않은 형식의 비밀번호입니다.");
-<!--            cancelPasswordEdit();-->
+        }
+    }
+
+    // 회원 탈퇴 API
+    function deleteAccount() {
+        if (confirm('정말로 탈퇴하시겠습니까? 탈퇴후에는 복구할 수 없습니다.')) {
+            fetch('/api/user', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === true) {
+                    alert('회원 탈퇴가 완료되었습니다.');
+                    logout();
+                } else {
+                    alert('회원 탈퇴에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('회원 탈퇴 중 오류가 발생했습니다.');
+            });
         }
     }
 </script>

@@ -6,11 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, String> {
     Page<PostEntity> findAllByIsActive(boolean isActive, Pageable pageable);
+    List<PostEntity> findAllByUser_UserIdAndIsActive(String userId, boolean isActive);
     Page<PostEntity> findAllByUser_UserIdAndIsActive(String userId, boolean isActive, Pageable pageable);
     Page<PostEntity> findAllByUser_UserIdAndCategory_CategoryIdAndIsActive(String userId, String categoryId, boolean b, Pageable pageable);
     Optional<PostEntity> findByPostIdAndIsActive(String postId, boolean isActive);

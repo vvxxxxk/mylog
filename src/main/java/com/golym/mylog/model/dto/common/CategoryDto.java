@@ -1,6 +1,7 @@
 package com.golym.mylog.model.dto.common;
 
 import com.golym.mylog.model.entity.CategoryEntity;
+import com.golym.mylog.model.entity.PostEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,8 @@ public class CategoryDto {
     public CategoryDto(CategoryEntity categoryEntity) {
         this.categoryId = categoryEntity.getCategoryId();
         this.name = categoryEntity.getName();
-        this.postCount = categoryEntity.getPosts().size();
+        this.postCount = categoryEntity.getPosts().isEmpty() ? 0 : (int) categoryEntity.getPosts().stream()
+                                                                            .filter(PostEntity::isActive)
+                                                                            .count();
     }
 }

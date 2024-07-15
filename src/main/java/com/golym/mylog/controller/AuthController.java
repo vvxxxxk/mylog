@@ -1,6 +1,7 @@
 package com.golym.mylog.controller;
 
 import com.golym.mylog.common.constants.ResponseType;
+import com.golym.mylog.model.dto.common.UserDetailsImpl;
 import com.golym.mylog.model.dto.request.RequestLoginDto;
 import com.golym.mylog.model.dto.response.ResponseDto;
 import com.golym.mylog.service.UserDetailsServiceImpl;
@@ -18,6 +19,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +38,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Validated @RequestBody RequestLoginDto params, HttpSession session) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(params.getEmail());
+        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(params.getEmail());
+        if (!userDetails.isActive()) {
+            return new ResponseEntity<>(new ResponseDto(ResponseType.FAIL), HttpStatus.FORBIDDEN);
+        }
 
         try {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(params.getEmail(), params.getPassword());

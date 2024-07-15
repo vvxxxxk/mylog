@@ -34,11 +34,20 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return user.getUserId();
     }
 
     @Override
     public String getPassword() {
         return user.getPassword();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return user.isActive();
+    }
+
+    public boolean isActive() {
+        return user.isActive();
     }
 }

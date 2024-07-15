@@ -1,5 +1,7 @@
 package com.golym.mylog.service;
 
+import com.golym.mylog.model.dto.common.UserDetailsImpl;
+import com.golym.mylog.model.entity.RoleEntity;
 import com.golym.mylog.model.entity.UserEntity;
 import com.golym.mylog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +26,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
+        UserDetails userDetails = userRepository.findByEmail(email)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("Not found email: " + email));
+        return userDetails;
     }
 
-    private UserDetails createUserDetails(UserEntity user) {
-        List<GrantedAuthority> authorities = user.getUserRoleMappings().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().getRoleName().name()))
-                .collect(Collectors.toList());
+    private UserDetailsImpl createUserDetails(UserEntity user) {
+        RoleEntity role = user.getUserRoleMappings().stream()
+                .map(userRoleMapping -> userRoleMapping.getRole())
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("User has no roles assigned"));
 
-        return new User(String.valueOf(user.getUserId()), user.getPassword(), authorities);
+        return new UserDetailsImpl(user, role);
     }
 }
