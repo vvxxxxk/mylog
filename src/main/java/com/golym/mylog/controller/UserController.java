@@ -30,8 +30,8 @@ public class UserController {
      */
     @PostMapping("/send-authcode")
     public ResponseEntity<?> sendAuthcode(@Valid @RequestBody RequestSendAuthCodeDto params) {
-        // 인증 메일 발송
         userService.sendAuthcode(params);
+
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 
@@ -40,11 +40,7 @@ public class UserController {
      */
     @PostMapping("/verify-authcode")
     public ResponseEntity<?> verifyAuthcode(@Valid @RequestBody RequestVerifyAuthcodeDto params) {
-
-        log.info("params = {}", params);
-        // 인증 코드 검증
-        boolean isVerified = userService.verifyAuthcode(params.getEmail(), params.getAuthcode());
-        if (!isVerified)
+        if (!userService.verifyAuthcode(params.getEmail(), params.getAuthcode()))
             throw new BadRequestException("Invalid email or authcode.");
 
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
@@ -55,9 +51,7 @@ public class UserController {
      */
     @PostMapping("/check-email")
     public ResponseEntity<?> checkEmail(@Valid @RequestBody RequestCheckEmailDto params) {
-        // 이메일 중복 확인
-        boolean isExisted = userService.isExistEmail(params.getEmail());
-        if (isExisted)
+        if (userService.isExistEmail(params.getEmail()))
             throw new ConflictException("The resource already exists. email=" + params.getEmail());
 
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
@@ -68,9 +62,7 @@ public class UserController {
      */
     @PostMapping("/check-nickname")
     public ResponseEntity<?> checkNickname(@Valid @RequestBody RequestCheckNicknameDto params) {
-        // 닉네임 중복 확인
-        boolean isExisted = userService.isExistNickname(params.getNickname());
-        if (isExisted)
+        if (userService.isExistNickname(params.getNickname()))
             throw new ConflictException("The resource already exists. nickname=" + params.getNickname());
 
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
@@ -93,11 +85,36 @@ public class UserController {
      */
     @PatchMapping("/profile-image")
     public ResponseEntity<?> updateProfileImage(@Valid @RequestBody RequestUpdateProfileImageDto params) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
         userService.updateProfileImage(userId, params.getProfileImage());
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
+
+    /**
+     * 닉네임 수정
+     */
+    @PatchMapping("/nickname")
+    public ResponseEntity<?> updateNickname(@Valid @RequestBody RequestUpdateNicknameDto params) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        // 닉네임 수정
+        userService.updateNickname(userId, params.getNickname());
+        return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
+    }
+
+    /**
+     * 비밀번호 수정
+     */
+    @PatchMapping("/password")
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody RequestUpdatePasswordDto params) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        // 비밀번호 수정
+        userService.updatePassword(userId, params.getPassword(), params.getNewPassword());
         return new ResponseEntity<>(new ResponseDto(ResponseType.SUCCESS), HttpStatus.OK);
     }
 

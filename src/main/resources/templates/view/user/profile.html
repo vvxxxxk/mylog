@@ -24,6 +24,7 @@
                     <div class="profile-picture">
                         <div class="profile-image" th:if="${user.profileImage != null}" th:style="'background-image: url(' + @{${user.profileImage}} + ');'"></div>
                         <div class="profile-image" th:unless="${user.profileImage != null}" th:style="'background-image: url(' + @{/images/default/profile-image.png} + ');'"></div>
+                        <input type="hidden" id="user-profile-image" th:value="${user.profileImage}">
                         <div class="profile-buttons">
                             <input type="file" id="profileImageInput" class="d-none" onchange="uploadProfileImage()" accept=".png, .jpg, .jpeg">
                             <button class="btn btn-primary" onclick="document.getElementById('profileImageInput').click();">프로필 업로드</button>
@@ -61,7 +62,7 @@
                         <div class="d-none" id="nickname-edit-form">
                             <input type="text" id="new-nickname" class="form-control" placeholder="새 닉네임">
                             <button class="btn btn-primary mt-2" onclick="saveNickname()">저장</button>
-                            <button class="btn btn-secondary mt-2" onclick="cancelEdit()">취소</button>
+                            <button class="btn btn-secondary mt-2" onclick="cancelNicknameEdit()">취소</button>
                         </div>
                     </div>
                 </div>
@@ -102,57 +103,39 @@
 <!-- 공통 스크립트 -->
 <div th:replace="~{common/fragment/script :: common_script}"></div>
 <script>
-    function editNickname() {
-        document.getElementById('user-nickname').style.display = 'none';
-        document.getElementById('edit-nickname-button').style.display = 'none';
-        document.getElementById('nickname-edit-form').classList.remove('d-none');
+    // 회원 프로필 이미지 수정 API
+    function updateProfileImage(imageUrl) {
+        return fetch('/api/user/profile-image', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                profileImage: imageUrl
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status == true) {
+                document.querySelector('.profile-image').style.backgroundImage = 'url(' + imageUrl + ')';
+            } else {
+                alert('유저 정보 업데이트에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('유저 정보 업데이트 중 오류가 발생했습니다.');
+        });
     }
 
-    function saveNickname() {
-        var newNickname = document.getElementById('new-nickname').value;
-        if (newNickname) {
-            document.getElementById('user-nickname').innerText = newNickname;
-        }
-        cancelEdit();
-    }
-
-    function cancelEdit() {
-        document.getElementById('user-nickname').style.display = 'block';
-        document.getElementById('edit-nickname-button').style.display = 'block';
-        document.getElementById('nickname-edit-form').classList.add('d-none');
-    }
-
-    function editPassword() {
-        document.getElementById('edit-password-button').style.display = 'none';
-        document.getElementById('password-edit-form').classList.remove('d-none');
-    }
-
-    function savePassword() {
-        var currentPassword = document.getElementById('current-password').value;
-        var newPassword = document.getElementById('new-password').value;
-        var confirmPassword = document.getElementById('confirm-password').value;
-
-        if (newPassword && newPassword === confirmPassword) {
-            alert("비밀번호가 성공적으로 변경되었습니다.");
-            // 여기서 실제 비밀번호 변경 로직을 처리
-        } else {
-            alert("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
-        }
-        cancelPasswordEdit();
-    }
-
-    function cancelPasswordEdit() {
-        document.getElementById('edit-password-button').style.display = 'block';
-        document.getElementById('password-edit-form').classList.add('d-none');
-    }
-
+    // 프로필 이미지 업로드 API
     function uploadProfileImage() {
-        var input = document.getElementById('profileImageInput');
+        const input = document.getElementById('profileImageInput');
         if (input.files && input.files[0]) {
-            var file = input.files[0];
-            
+            const file = input.files[0];
+
             // 이미지 업로드
-            var formData = new FormData();
+            const formData = new FormData();
             formData.append('image', file);
 
             fetch('/api/file/image', {
@@ -161,33 +144,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 if (data.response.status == true) {
-
-                    // 회원 프로필 이미지 업데이트
                     var imageUrl = data.url;
-                    fetch('/api/user/profile-image', {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            profileImage: imageUrl
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status == true) {
-                            document.querySelector('.profile-image').style.backgroundImage = 'url(' + imageUrl + ')';
-                        } else {
-                            alert('유저 정보 업데이트에 실패했습니다.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('유저 정보 업데이트 중 오류가 발생했습니다.');
-                    });
-
+                    updateProfileImage(imageUrl);
                 } else {
                     alert('이미지 업로드에 실패했습니다.');
                 }
@@ -199,10 +158,103 @@
         }
     }
 
-
+    // 프로필 이미지 기본 프로필로 변경
     function removeProfileImage() {
+        updateProfileImage('/images/default/profile-image.png');
         document.querySelector('.profile-image').style.backgroundImage = 'url(/images/default/profile-image.png)';
         document.getElementById('profileImageInput').value = '';
+    }
+
+    // 닉네임 수정 element 생성
+    function editNickname() {
+        document.getElementById('user-nickname').style.display = 'none';
+        document.getElementById('edit-nickname-button').style.display = 'none';
+        document.getElementById('nickname-edit-form').classList.remove('d-none');
+    }
+
+    // 닉네임 수정 element 제거
+    function cancelNicknameEdit() {
+        document.getElementById('user-nickname').style.display = 'block';
+        document.getElementById('edit-nickname-button').style.display = 'block';
+        document.getElementById('nickname-edit-form').classList.add('d-none');
+    }
+
+    // 닉네임 수정 API
+    function saveNickname() {
+        const newNickname = document.getElementById('new-nickname').value;
+        fetch('/api/user/nickname', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nickname: newNickname
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status == true) {
+                document.getElementById('user-nickname').innerText = newNickname;
+                cancelNicknameEdit();
+            } else {
+                alert('닉네임이 중복되었거나 사용할 수 없습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('닉네임이 중복되었거나 사용할 수 없습니다.');
+        });
+    }
+
+    // 비밀번호 수정 element 생성
+    function editPassword() {
+        document.getElementById('edit-password-button').style.display = 'none';
+        document.getElementById('password-edit-form').classList.remove('d-none');
+    }
+
+    // 비밀번호 수정 element 제거
+    function cancelPasswordEdit() {
+        document.getElementById('edit-password-button').style.display = 'block';
+        document.getElementById('password-edit-form').classList.add('d-none');
+    }
+
+    // 비밀번호 수정 API
+    function savePassword() {
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        // 비밀번호 정규표현식
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).{8,16}$/;
+
+        if (passwordRegex.test(newPassword) && newPassword === confirmPassword) {
+            fetch('/api/user/password', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    password: currentPassword,
+                    newPassword: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status == true) {
+                    alert('비밀번호가 변경되었습니다.');
+                    cancelPasswordEdit();
+                } else {
+                    alert('비밀번호를 변경할 수 없습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('현재 비밀번호가 일치하지 않아 비밀번호를 변경할 수 없습니다.');
+            });
+        } else {
+            alert("새 비밀번호와 새 비밀번호 확인이 일치하지 않거나 올바르지 않은 형식의 비밀번호입니다.");
+<!--            cancelPasswordEdit();-->
+        }
     }
 </script>
 </body>

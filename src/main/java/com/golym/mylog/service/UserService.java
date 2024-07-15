@@ -2,6 +2,7 @@ package com.golym.mylog.service;
 
 import com.golym.mylog.common.constants.RoleType;
 import com.golym.mylog.common.exception.BadRequestException;
+import com.golym.mylog.common.exception.ConflictException;
 import com.golym.mylog.common.utils.CodeGenerator;
 import com.golym.mylog.model.dto.common.UserDto;
 import com.golym.mylog.model.dto.request.RequestSendAuthCodeDto;
@@ -128,6 +129,33 @@ public class UserService {
                 .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
 
         user.updateProfileImage(profileImage);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateNickname(String userId, String nickname) {
+        // 닉네임 중복 확인
+        if(isExistNickname(nickname))
+            throw new ConflictException("The resource already exists. nickname=" + nickname);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
+
+        user.updateNickname(nickname);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updatePassword(String userId, String password, String newPassword) {
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("Not found user. userId: " + userId));
+
+        // 비밀번호 일치여부 확인
+        if (!passwordEncoder.matches(password, user.getPassword()))
+            throw new BadRequestException("Invalid request update password.");
+
+        user.updatePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 }
