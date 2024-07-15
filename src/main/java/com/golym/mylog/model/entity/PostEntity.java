@@ -78,4 +78,8 @@ public class PostEntity {
         this.content = content;
         this.category = category;
     }
+
+    public void addViewCount() {
+        this.viewCount++;
+    }
 }

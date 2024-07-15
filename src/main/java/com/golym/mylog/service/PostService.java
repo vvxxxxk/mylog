@@ -6,9 +6,11 @@ import com.golym.mylog.model.dto.common.PostDto;
 import com.golym.mylog.model.dto.request.RequestCreatePostDto;
 import com.golym.mylog.model.entity.CategoryEntity;
 import com.golym.mylog.model.entity.PostEntity;
+import com.golym.mylog.model.entity.ViewCountLogEntity;
 import com.golym.mylog.repository.CategoryRepository;
 import com.golym.mylog.repository.PostRepository;
 import com.golym.mylog.repository.UserRepository;
+import com.golym.mylog.repository.ViewCountLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,6 +32,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final ViewCountLogRepository viewCountLogRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
@@ -106,5 +110,24 @@ public class PostService {
         postEntity.updatePost(title, content, categoryEntity);
 
         postRepository.save(postEntity);
+    }
+
+    @Transactional
+    public void updateViewCount(String postId, String userIp) {
+
+        PostEntity postEntity = postRepository.findById(postId)
+                .orElseThrow(() -> new BadRequestException("Not Found Post. postId=" + postId));
+
+        String id = postId + ":" + userIp;
+        viewCountLogRepository.findById(id).ifPresentOrElse(
+                entity -> {
+                    log.info("이미 조회한 사용자입니다. id={}", id);
+                },
+                () -> {
+                    viewCountLogRepository.save(new ViewCountLogEntity(postId, userIp));
+                    postEntity.addViewCount();
+                    postRepository.save(postEntity);
+                }
+        );
     }
 }

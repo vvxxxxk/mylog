@@ -85,25 +85,20 @@ public class ViewController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
 
-        System.out.println("request.getRemoteAddr() = " + request.getRemoteAddr());
-        System.out.println("request.getLocalAddr() = " + request.getLocalAddr());
+        // 조회수 업데이트
+        postService.updateViewCount(postId, request.getRemoteAddr());
 
         UserDto user = new UserDto();
         if (!userId.equals("anonymousUser"))
             user = userService.getUser(userId);
-
         PostDto post = postService.getPost(postId);
         UserDto bloger = userService.getUser(post.getUserId());
         List<CommentDto> commentList = commentService.getComment(postId);
-
-
-        System.out.println("commentList = " + commentList);
 
         model.addAttribute("user", user);
         model.addAttribute("bloger", bloger);
         model.addAttribute("post", post);
         model.addAttribute("commentList", commentList);
-
         return "/view/blog/post";
     }
 
